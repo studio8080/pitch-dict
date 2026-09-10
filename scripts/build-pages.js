@@ -103,6 +103,23 @@ const adsClient = (src.match(/adsbygoogle\.js\?client=([a-z0-9-]+)/) || [])[1] |
 const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const strip = (s) => String(s == null ? "" : s).replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
 const clip = (s, n) => (s.length > n ? s.slice(0, n - 1) + "…" : s);
+/* 文の単位で n 字に収める。英語の description 用。
+   clip() は文字数で機械的に切るので、英語だと "explanation of th…" のように
+   単語の途中で終わる。検索結果の説明文が全118ページで途切れていた（2026-09-10 判明）。
+   先頭の文は必ず入れ、続く文は丸ごと収まるときだけ足す。 */
+const fitSentences = (sentences, n) => {
+  const parts = sentences.map((s) => strip(s)).filter(Boolean);
+  let out = parts[0] || "";
+  if (out.length > n) {
+    const cut = out.slice(0, n - 1);
+    out = cut.slice(0, Math.max(cut.lastIndexOf(" "), 40)) + "…";
+  }
+  for (const s of parts.slice(1)) {
+    if (out.length + 1 + s.length > n) break;
+    out += " " + s;
+  }
+  return out;
+};
 const CATS = ["live", "column", "data", "rule"];
 const byCat = Object.fromEntries(CATS.map((c) => [c, TERMS.filter((t) => t.cat === c)]));
 
@@ -275,7 +292,14 @@ function termPage(t, lang) {
     : `What is ${sn} in football? Explained with a moving tactics board | PITCH DICTIONARY`;
   const desc = lang === "ja"
     ? clip(`${name}（${t.en}）とは：${one} 実況・コラム・データで使われるサッカー用語「${sn}」の意味を、初心者向けに動く戦術ボードで図解。${strip(t.use.text)}`, 150)
-    : clip(`${name} (${t.name}) in football: ${one} A beginner-friendly explanation of the football term "${sn}", visualized on an animated tactics board. ${strip(TR_EN[t.id].text)}`, 155);
+    // 英語ページの説明文に日本語名（t.name）を入れない。検索結果の冒頭にカナが並ぶと
+    // 英語圏の検索者には外国語ページに見え、2位に出ても押されなかった（305表示・0クリック）。
+    // 定義を先頭に置き、以降は文が丸ごと入るときだけ足す。
+    : fitSentences([
+      `${name} in football: ${one}`,
+      `A beginner-friendly explanation of "${sn}", visualized on an animated tactics board.`,
+      TR_EN[t.id].text,
+    ], 155);
 
   const rel = (t.rel || []).map((r) => TERMS.find((x) => x.id === r)).filter(Boolean);
   const sib = byCat[t.cat];

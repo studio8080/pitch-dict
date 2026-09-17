@@ -639,6 +639,10 @@ footer{border-top:1px solid rgba(255,255,255,.2);padding:30px 0 44px;color:rgba(
 }
 .company .cbtn:hover{transform:translateY(-2px);filter:brightness(1.07)}
 .company .addr{display:block;margin-top:13px;font-size:12px;color:#A2B2CE;line-height:1.7}
+.company .cother{margin:14px 0 0;font-size:12.5px;color:#A2B2CE;line-height:1.95}
+.company .cother a{color:#CDEEFF;font-weight:800;text-decoration:none;white-space:nowrap}
+.company .cother a:hover{color:#FFD84D}
+.company .cother .sep{opacity:.5;margin:0 6px}
 .fnav{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;margin-top:20px;font-weight:800;font-size:13.5px}
 .fnav a{color:#fff;text-decoration:none}
 .fnav a:hover{color:#FFD84D}
@@ -954,6 +958,9 @@ html[data-theme="dark"] .rel button:hover{background:#12294A}
       <span class="cmotto">「店のしごと、少しだけ軽くする。」</span>
       <p>京都拠点・全国対応。個人事業主や街の小さなお店のための、AI活用・デジタル化/DX支援の企画室です。ホームページ制作やWEBプレゼンス強化から、予約・在庫・メール・タスクの自動化まで——ITが苦手でも大丈夫。「ちゃんと現場で回る仕組み」をあなたの隣で一緒につくります。このアプリもそんな“つくる楽しさ”から生まれました。</p>
       <a class="cbtn" href="https://kokokikaku.com/" target="_blank" rel="noopener">ここ企画のサイトを見る →</a>
+      <p class="cother"><span class="lbl">ほかにつくっているもの：</span>
+        <a class="o1" href="https://misefits.kokokikaku.com/" target="_blank" rel="noopener">MiseFits（店舗レイアウト）</a><span class="sep">・</span>
+        <a class="o2" href="https://menufits.kokokikaku.com/" target="_blank" rel="noopener">MenuFits（飲食店のメニュー表）</a></p>
     </div>
 
     <nav class="fnav" aria-label="サイト内リンク">
@@ -3803,7 +3810,9 @@ const I18N={
   zoom:"拡大",vzoomBtn:"戦術ボードを拡大して見る",vzhint:"ホイール／ピンチで拡大・ドラッグで移動・Escで閉じる",
   cmotto:"「店のしごと、少しだけ軽くする。」",
   cdesc:"京都拠点・全国対応。個人事業主や街の小さなお店のための、AI活用・デジタル化/DX支援の企画室です。ホームページ制作やWEBプレゼンス強化から、予約・在庫・メール・タスクの自動化まで——ITが苦手でも大丈夫。「ちゃんと現場で回る仕組み」をあなたの隣で一緒につくります。このアプリもそんな“つくる楽しさ”から生まれました。",
-  cbtn:"ここ企画のサイトを見る →"
+  cbtn:"ここ企画のサイトを見る →",
+  cotherLbl:"ほかにつくっているもの：",
+  cother1:"MiseFits（店舗レイアウト）",cother2:"MenuFits（飲食店のメニュー表）"
  },
  en:{
   toggle:"日本語",
@@ -3825,7 +3834,9 @@ const I18N={
   zoom:"Zoom",vzoomBtn:"Enlarge the tactics board",vzhint:"Scroll / pinch to zoom · drag to pan · Esc to close",
   cmotto:"“Make shop work a little lighter.”",
   cdesc:"Kyoto-based, serving all of Japan. A planning studio helping sole proprietors and small local shops with AI and digital/DX support — from website building and web presence to automating bookings, inventory, email and tasks. Not a tech person? No problem. We build systems that actually work on the ground, right beside you. This app was born from that same joy of making things.",
-  cbtn:"Visit kokokikaku →"
+  cbtn:"Visit kokokikaku →",
+  cotherLbl:"Other things we make: ",
+  cother1:"MiseFits (store layout)",cother2:"MenuFits (restaurant menus)"
  }
 };
 function _qs(s){return document.querySelector(s);}
@@ -3852,6 +3863,9 @@ function applyLang(l){
   var cm=_qs(".company .cmotto");if(cm)cm.textContent=T.cmotto;
   var cd=_qs(".company p");if(cd)cd.textContent=T.cdesc;
   var cb=_qs(".company .cbtn");if(cb)cb.textContent=T.cbtn;
+  var ol=_qs(".company .cother .lbl");if(ol)ol.textContent=T.cotherLbl;
+  var o1=_qs(".company .cother .o1");if(o1)o1.textContent=T.cother1;
+  var o2=_qs(".company .cother .o2");if(o2)o2.textContent=T.cother2;
   render();
   if(window.__setTabTop)window.__setTabTop();
 }

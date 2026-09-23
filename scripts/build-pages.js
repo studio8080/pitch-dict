@@ -287,10 +287,21 @@ function termPage(t, lang) {
   const altPath = termPath(t.id, altLang);
   const altUrl = abs(altPath);
 
-  const title = lang === "ja"
+  // Search-intent refinements for existing pages; keep the visual glossary identity.
+  const searchCopy = lang === "en" ? {
+    cutback: {
+      title: 'Cutback in football: meaning & animated example | PITCH DICTIONARY',
+      desc: 'A cutback is a pass pulled back from near the goal line to a teammate farther from goal. See the movement and why it creates chances on an animated board.'
+    },
+    anchor: {
+      title: 'Anchor in football: defensive midfield role | PITCH DICTIONARY',
+      desc: 'An anchor sits in front of the defence, blocks central passing lanes and links the build-up. See the defensive midfield role on an animated tactics board.'
+    }
+  }[t.id] : null;
+  const title = searchCopy ? searchCopy.title : lang === "ja"
     ? `${sn}とは？意味をサッカー戦術ボードで3秒図解｜ピッチの辞書`
     : `What is ${sn} in football? Explained with a moving tactics board | PITCH DICTIONARY`;
-  const desc = lang === "ja"
+  const desc = searchCopy ? searchCopy.desc : lang === "ja"
     ? clip(`${name}（${t.en}）とは：${one} 実況・コラム・データで使われるサッカー用語「${sn}」の意味を、初心者向けに動く戦術ボードで図解。${strip(t.use.text)}`, 150)
     // 英語ページの説明文に日本語名（t.name）を入れない。検索結果の冒頭にカナが並ぶと
     // 英語圏の検索者には外国語ページに見え、2位に出ても押されなかった（305表示・0クリック）。

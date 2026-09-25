@@ -317,6 +317,11 @@ function termPage(t, lang) {
     },
     // 2026-09-25 時点（28日間）: 124表示・0クリック・平均7.8位。
     // 検索語は "volante football position" / "what is a volante in soccer" / "volante meaning"。
+    // 用語名が "What is 10-Second..." と冠詞抜けになるので個別に。2026/27 の IFAB 改正（2026年W杯から適用）。
+    sub10: {
+      title: 'The 10-second substitution rule in football, explained | PITCH DICTIONARY',
+      desc: 'From 2026/27, a substituted player must leave at the nearest line within 10 seconds, or the replacement has to wait a minute. See it on an animated board.'
+    },
     volante: {
       title: 'Volante in football: meaning & position explained | PITCH DICTIONARY',
       desc: 'Volante is Portuguese for "steering wheel": a defensive midfielder at the base of midfield who steers attack and defence. See the position on an animated board.'

@@ -125,7 +125,18 @@ const byCat = Object.fromEntries(CATS.map((c) => [c, TERMS.filter((t) => t.cat =
 
 /* 言語ごとの表記ゆれを1か所にまとめる */
 const shortJa = (t) => t.name.split("（")[0].split("／")[0];
-const shortEn = (t) => t.en.split("(")[0].split("/")[0].trim();
+// 英語名の「/」より前だけを取ると語が欠けるもの。"Near / Far Post" が "Near" になり、
+// タイトルが "What is Near in football?" になっていた（2026-09 時点で英語ページ最多の表示）。
+const SHORT_EN = {
+  nearfar: "Near Post & Far Post",
+  numadv: "Numerical Superiority",
+  pkfk: "Penalties & Free Kicks",
+  overhead: "Overhead Kick",
+  zonal: "Zonal Marking",
+};
+const shortEn = (t) => SHORT_EN[t.id] || t.en.split("(")[0].split("/")[0].trim();
+// "Near Post & Far Post" のように2語を並べた名前は複数扱いにする。
+const whatIs = (sn) => (sn.includes(" & ") ? "What are" : "What is");
 const nameOf = (t, lang) => (lang === "ja" ? t.name : t.en);
 const shortOf = (t, lang) => (lang === "ja" ? shortJa(t) : shortEn(t));
 const subOf = (t, lang) => (lang === "ja" ? t.en : t.name);
@@ -299,11 +310,28 @@ function termPage(t, lang) {
     anchor: {
       title: 'Anchor in football: defensive midfield role | PITCH DICTIONARY',
       desc: 'An anchor sits in front of the defence, blocks central passing lanes and links the build-up. See the defensive midfield role on an animated tactics board.'
+    },
+    // 2026-09-25 時点（28日間）: 124表示・0クリック・平均7.8位。
+    // 検索語は "volante football position" / "what is a volante in soccer" / "volante meaning"。
+    volante: {
+      title: 'Volante in football: meaning & position explained | PITCH DICTIONARY',
+      desc: 'Volante is Portuguese for "steering wheel": a defensive midfielder at the base of midfield who steers attack and defence. See the position on an animated board.'
     }
-  }[t.id] : null;
+  }[t.id] : {
+    // 2026-09-25 時点（28日間）: 94表示・平均31.5位。「ボランチ 英語」「ボランチ ポルトガル語」「ボランチ ハンドル」で探されている。
+    volante: {
+      title: 'ボランチとは？意味と語源（ポルトガル語でハンドル）・英語での呼び方｜ピッチの辞書',
+      desc: 'ボランチ（Volante）はポルトガル語で「ハンドル」。中盤の底で攻守の舵取りをする守備的MFのことで、英語では defensive midfielder や holding midfielder と呼ばれる。役割を動く戦術ボードで図解。'
+    },
+    // 2026-09-25 時点（28日間）: 29表示・平均11.4位。「飲水タイム 英語」で探されている。
+    hydration: {
+      title: '飲水タイムとは？英語での言い方と意味を3秒図解｜ピッチの辞書',
+      desc: '飲水タイムは英語で Hydration Break（drinks break とも）。猛暑の試合で前後半に1回ずつ設けられる約1分の給水休憩のこと。実況での使われ方と、試合の流れへの影響を図解。'
+    }
+  }[t.id] || null;
   const title = searchCopy ? searchCopy.title : lang === "ja"
     ? `${sn}とは？意味をサッカー戦術ボードで3秒図解｜ピッチの辞書`
-    : `What is ${sn} in football? Explained with a moving tactics board | PITCH DICTIONARY`;
+    : `${whatIs(sn)} ${sn} in football? Explained with a moving tactics board | PITCH DICTIONARY`;
   const desc = searchCopy ? searchCopy.desc : lang === "ja"
     ? clip(`${name}（${t.en}）とは：${one} 実況・コラム・データで使われるサッカー用語「${sn}」の意味を、初心者向けに動く戦術ボードで図解。${strip(t.use.text)}`, 150)
     // 英語ページの説明文に日本語名（t.name）を入れない。検索結果の冒頭にカナが並ぶと
@@ -338,7 +366,7 @@ function termPage(t, lang) {
     },
     {
       "@context": "https://schema.org", "@type": "Article",
-      headline: lang === "ja" ? `${sn}とは？意味を戦術ボードで図解` : `What is ${sn}? A football term, visualized`,
+      headline: lang === "ja" ? `${sn}とは？意味を戦術ボードで図解` : `${whatIs(sn)} ${sn}? A football term, visualized`,
       description: desc, url, inLanguage: lang,
       mainEntityOfPage: url, dateModified: lastmod, image: SITE + "/og-v2.png",
       author: { "@type": "Organization", name: "ここ企画", url: "https://kokokikaku.com/" },

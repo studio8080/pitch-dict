@@ -18,6 +18,9 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <link rel="canonical" href="https://pitch.kokokikaku.com/">
+<link rel="alternate" hreflang="ja" href="https://pitch.kokokikaku.com/">
+<link rel="alternate" hreflang="en" href="https://pitch.kokokikaku.com/en/">
+<link rel="alternate" hreflang="x-default" href="https://pitch.kokokikaku.com/en/">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="ピッチの辞書 | サッカー用語を、観ながら3秒で。">
 <meta name="twitter:description" content="実況の「今の言葉、何？」を動く戦術ボードで3秒図解。全118語収録のサッカー用語図鑑。">
@@ -968,6 +971,7 @@ html[data-theme="dark"] .rel button:hover{background:#12294A}
       <a href="/terms/">📚 全用語一覧</a>
       <a href="/privacy.html">プライバシーポリシー</a>
       <a href="https://kokokikaku.com/" target="_blank" rel="noopener">ここ企画</a>
+      <a href="/en/" hreflang="en" lang="en">🇬🇧 English</a>
     </nav>
     <div class="copy">© 2026 ここ企画 / ピッチの辞書</div>
   </div>
@@ -3879,6 +3883,23 @@ function applyLang(l){
   /* 英語の静的ページ(/en/)から来たときは ?lang=en が付く。URLでの明示は保存値より優先する。 */
   var urlLang=null;try{urlLang=new URLSearchParams(location.search).get("lang");}catch(_){}
   applyLang((urlLang==="en"||urlLang==="ja")?urlLang:(saved==="en"?"en":"ja"));
+  /* 日本語以外のブラウザで初めて来た人に、英語表示への切り替えを案内する。自動では切り替えない
+     （Googlebot は英語環境で描画するので、自動切替にすると日本語トップが英語として登録される）。 */
+  (function enHint(){
+    if(urlLang||saved||lang==="en")return;
+    var langs=(navigator.languages&&navigator.languages.length)?navigator.languages:[navigator.language||""];
+    if(langs.some(function(x){return /^ja\b/i.test(x||"");}))return;
+    var bar=document.createElement("div");
+    bar.setAttribute("lang","en");bar.setAttribute("role","region");bar.setAttribute("aria-label","Language");
+    bar.innerHTML='<span>This page is in Japanese.</span><button type="button">Read it in English →</button><button type="button" aria-label="Close">✕</button>';
+    bar.style.cssText="position:relative;z-index:60;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px 12px;padding:9px 44px 9px 16px;background:#12203C;color:#fff;font-size:14px;font-weight:700;text-align:center";
+    var b=bar.querySelectorAll("button"),go=b[0],x=b[1];
+    go.style.cssText="background:#FFC01E;color:#12203C;border:0;border-radius:999px;padding:6px 14px;font:inherit;cursor:pointer";
+    x.style.cssText="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:0;color:#fff;font-size:16px;cursor:pointer;padding:6px";
+    go.addEventListener("click",function(){applyLang("en");bar.remove();});
+    x.addEventListener("click",function(){try{localStorage.setItem("pd_lang","ja");}catch(_){}bar.remove();});
+    document.body.insertBefore(bar,document.body.firstChild);
+  })();
   applyQueryParam();
   openFromHash();
   /* 夜観戦ダークモード */

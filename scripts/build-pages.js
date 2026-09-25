@@ -197,6 +197,9 @@ const UI = {
   },
 };
 
+// SNSで共有されたときの画像。og-v2.png は日本語のコピー入りなので、英語ページには og-en.png を出す。
+const ogImage = (lang) => (lang === "en" ? "og-en.png" : "og-v2.png");
+
 // iOSアプリ（日本のApp Storeのみで配信中）への Safari スマートバナー。英語ページには出さない。
 const APP_BANNER = '<meta name="apple-itunes-app" content="app-id=6794986070">\n';
 
@@ -214,7 +217,7 @@ function head({ lang, title, desc, url, altUrl, altPath, jsonld, ogType = "artic
 <link rel="canonical" href="${url}">
 <link rel="alternate" hreflang="ja" href="${jaUrl}">
 <link rel="alternate" hreflang="en" href="${enUrl}">
-<link rel="alternate" hreflang="x-default" href="${jaUrl}">
+<link rel="alternate" hreflang="x-default" href="${enUrl}">
 <meta name="theme-color" content="#1536C4">
 ${lang === "ja" ? APP_BANNER : ""}<meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(desc)}">
@@ -222,13 +225,13 @@ ${lang === "ja" ? APP_BANNER : ""}<meta property="og:title" content="${esc(title
 <meta property="og:site_name" content="${esc(u.brand)}">
 <meta property="og:locale" content="${u.ogLocale}">
 <meta property="og:url" content="${url}">
-<meta property="og:image" content="${SITE}/og-v2.png">
+<meta property="og:image" content="${SITE}/${ogImage(lang)}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${esc(title)}">
 <meta name="twitter:description" content="${esc(desc)}">
-<meta name="twitter:image" content="${SITE}/og-v2.png">
+<meta name="twitter:image" content="${SITE}/${ogImage(lang)}">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 ${cspMeta}
 ${jsonld.map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join("\n")}
@@ -273,7 +276,7 @@ function foot(lang) {
       <a href="https://kokokikaku.com/" target="_blank" rel="noopener">${esc(u.company)}</a>
     </nav>
     <p class="tfnote">${u.footNote}</p>
-    <p class="tfcopy">© 2026 ここ企画 / ${esc(u.brand)}</p>
+    <p class="tfcopy">© 2026 ${esc(u.company)} / ${esc(u.brand)}</p>
   </div>
 </footer>
 <script src="/affiliates.js" defer></script>
@@ -355,6 +358,8 @@ function termPage(t, lang) {
   const tag = lang === "ja" ? " #サッカー用語" : " #football";
   const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText + tag)}&url=${encodeURIComponent(url)}`;
   const lineUrl = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(url)}&text=${encodeURIComponent(shareText)}`;
+  const waUrl = `https://wa.me/?text=${encodeURIComponent(shareText + " " + url)}`;
+  const rdUrl = `https://www.reddit.com/submit?url=${encodeURIComponent(url)}&title=${encodeURIComponent(shareText)}`;
 
   const setName = lang === "ja" ? "ピッチの辞書 サッカー用語集" : "PITCH DICTIONARY football glossary";
   const jsonld = [
@@ -368,9 +373,9 @@ function termPage(t, lang) {
       "@context": "https://schema.org", "@type": "Article",
       headline: lang === "ja" ? `${sn}とは？意味を戦術ボードで図解` : `${whatIs(sn)} ${sn}? A football term, visualized`,
       description: desc, url, inLanguage: lang,
-      mainEntityOfPage: url, dateModified: lastmod, image: SITE + "/og-v2.png",
-      author: { "@type": "Organization", name: "ここ企画", url: "https://kokokikaku.com/" },
-      publisher: { "@type": "Organization", name: "ここ企画", url: "https://kokokikaku.com/", logo: { "@type": "ImageObject", url: SITE + "/icon-512.png" } },
+      mainEntityOfPage: url, dateModified: lastmod, image: SITE + "/" + ogImage(lang),
+      author: { "@type": "Organization", name: UI[lang].company, url: "https://kokokikaku.com/" },
+      publisher: { "@type": "Organization", name: UI[lang].company, url: "https://kokokikaku.com/", logo: { "@type": "ImageObject", url: SITE + "/icon-512.png" } },
       about: { "@type": "Thing", name: lang === "ja" ? "サッカー用語" : "Football terminology" },
       keywords: [sn, subOf(t, lang), lang === "ja" ? "サッカー用語" : "football term", catName(t.cat, lang)].join(","),
     },
@@ -428,7 +433,10 @@ function termPage(t, lang) {
     <div class="tshare">
       <span>${esc(u.share)}</span>
       <a class="sbtn x" href="${xUrl}" target="_blank" rel="noopener noreferrer">𝕏 Post</a>
-      <a class="sbtn line" href="${lineUrl}" target="_blank" rel="noopener noreferrer">💬 LINE</a>
+      ${lang === "ja"
+        ? `<a class="sbtn line" href="${lineUrl}" target="_blank" rel="noopener noreferrer">💬 LINE</a>`
+        : `<a class="sbtn wa" href="${waUrl}" target="_blank" rel="noopener noreferrer">💬 WhatsApp</a>
+      <a class="sbtn rd" href="${rdUrl}" target="_blank" rel="noopener noreferrer">Reddit</a>`}
     </div>
 
     <nav class="tpn" aria-label="${esc(u.prevNext)}">
@@ -666,7 +674,7 @@ ${vizCss}
 .tchip span{font-size:15px}
 .tshare{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:26px;font-size:13.5px;font-weight:700;color:var(--muted)}
 .sbtn{display:inline-block;text-decoration:none;font-weight:800;font-size:13.5px;padding:8px 16px;border-radius:999px;color:#fff;border:2px solid #12203C;box-shadow:0 3px 0 #12203C}
-.sbtn.x{background:#111}.sbtn.line{background:#06C755}
+.sbtn.x{background:#111}.sbtn.line{background:#06C755}.sbtn.wa{background:#1FA855}.sbtn.rd{background:#FF4500}
 .sbtn:hover{color:#fff}
 .tpn{display:flex;justify-content:space-between;gap:12px;margin-top:22px;padding-top:16px;border-top:2px dashed rgba(20,40,90,.14);font-weight:800;font-size:14px}
 .tpn a{text-decoration:none;color:#0E6EAF}

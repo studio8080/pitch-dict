@@ -13,6 +13,7 @@
  *   共通
  *     terms.css             … 上記ページ用CSS（戦術ボードのアニメCSSは index.html から抽出）
  *     sitemap.xml           … 全URL（日英）
+ *     llms.txt              … AIアシスタント向けのサイト案内（英語の用語一覧と日本語の用語一覧）
  * を生成する。
  *
  * 使い方:  node scripts/build-pages.js
@@ -795,4 +796,29 @@ fs.writeFileSync(path.join(ROOT, "sitemap.xml"),
   urls.map((u) => `  <url><loc>${u.loc}</loc><lastmod>${u.lastmod}</lastmod><changefreq>${u.changefreq}</changefreq><priority>${u.priority}</priority></url>`).join("\n") +
   `\n</urlset>\n`);
 
-console.log(`✅ 日本語 ${TERMS.length + 1} ページ / 英語 ${TERMS.length + 2} ページ / terms.css / sitemap.xml（${urls.length} URL）を生成しました。lastmod=${lastmod}`);
+/* ---------- llms.txt（AIアシスタント向けのサイト案内） ----------
+   ChatGPT などからの流入があるので、どのURLに何があるかを平文でまとめて渡す。
+   英語を先に置き、日本語の一覧は後ろに付ける。 */
+const llmsLine = (t, lang) => `- [${shortOf(t, lang)}](${abs(termPath(t.id, lang))}): ${oneOf(t, lang)}`;
+fs.writeFileSync(path.join(ROOT, "llms.txt"), [
+  "# PITCH DICTIONARY (ピッチの辞書)",
+  "",
+  `> A beginner-friendly visual glossary of ${TERMS.length} football (soccer) terms. Every term has an original animated tactics board, a one-line definition, why it matters, and how commentators use it. Available in English and Japanese. Free, no sign-up.`,
+  "",
+  "- English home: " + abs("/en/"),
+  "- All English terms: " + abs("/en/terms/"),
+  "- Japanese home (日本語): " + abs("/"),
+  "- Privacy policy: " + abs("/privacy.html"),
+  "- Publisher: Koko Kikaku (ここ企画), Kyoto, Japan — https://kokokikaku.com/",
+  "",
+  "## Terms (English)",
+  "",
+  ...TERMS.map((t) => llmsLine(t, "en")),
+  "",
+  "## 用語（日本語）",
+  "",
+  ...TERMS.map((t) => llmsLine(t, "ja")),
+  "",
+].join("\n"));
+
+console.log(`✅ 日本語 ${TERMS.length + 1} ページ / 英語 ${TERMS.length + 2} ページ / terms.css / sitemap.xml（${urls.length} URL）/ llms.txt を生成しました。lastmod=${lastmod}`);

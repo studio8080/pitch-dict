@@ -186,6 +186,9 @@ const UI = {
   },
 };
 
+// iOSアプリ（日本のApp Storeのみで配信中）への Safari スマートバナー。英語ページには出さない。
+const APP_BANNER = '<meta name="apple-itunes-app" content="app-id=6794986070">\n';
+
 function head({ lang, title, desc, url, altUrl, altPath, jsonld, ogType = "article" }) {
   const u = UI[lang];
   const jaUrl = lang === "ja" ? url : altUrl;
@@ -202,7 +205,7 @@ function head({ lang, title, desc, url, altUrl, altPath, jsonld, ogType = "artic
 <link rel="alternate" hreflang="en" href="${enUrl}">
 <link rel="alternate" hreflang="x-default" href="${jaUrl}">
 <meta name="theme-color" content="#1536C4">
-<meta property="og:title" content="${esc(title)}">
+${lang === "ja" ? APP_BANNER : ""}<meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:type" content="${ogType}">
 <meta property="og:site_name" content="${esc(u.brand)}">

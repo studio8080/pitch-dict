@@ -1,7 +1,7 @@
 # ピッチの辞書（Web版）
 
 サッカー用語118語を「動く戦術ボード」で3秒図解する用語図鑑。
-公開URL: https://pitch.kokokikaku.com/ ／ 配信: GitHub Pages（`master` ブランチのファイルをそのまま配信）
+公開URL: https://pitch.kokokikaku.com/ ／ 配信: GitHub Pages（`main` ブランチのファイルをそのまま配信）
 
 ## ファイル構成
 
@@ -125,3 +125,7 @@ node -e "require('http');" && npx --yes serve . -p 8899
 iOSアプリ（別リポジトリ `pitch-app`）は `scripts/build-data.js` でこの `index.html` から
 用語データと戦術ボードHTMLを抽出している。`TERMS` / `VIZ` / `CAT` / `EMOJI` / `TR_EN` / `I18N` / `TREND` の
 **変数名と構造を変えるとアプリ側のビルドが壊れる**ので注意する。
+
+日本語ページ（`index.html` と `terms/` 配下）には、iPhone の Safari でアプリを案内する
+`<meta name="apple-itunes-app">` を入れてある（`build-pages.js` の `APP_BANNER`）。
+アプリは日本の App Store でしか配信していないので、英語ページには入れない。配信国を広げたら英語ページにも足す。

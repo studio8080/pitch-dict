@@ -237,7 +237,7 @@ ${cspMeta}
 ${jsonld.map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join("\n")}
 ${gaId ? `<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=${gaId}"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${gaId}');</script>` : ""}
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',region:["AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV","LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE","IS","LI","NO","GB","CH"]});gtag('js',new Date());gtag('config','${gaId}');</script>` : ""}
 ${adsClient ? `<!-- Google AdSense -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsClient}" crossorigin="anonymous"></script>` : ""}
 <link rel="icon" type="image/svg+xml" href="/icon.svg">
@@ -258,7 +258,7 @@ ${sharedDefs}
       ${lang === "en" ? '<input type="hidden" name="lang" value="en">' : ""}
       <button type="submit" aria-label="${esc(u.searchAria)}">🔍</button>
     </form>
-    <a class="tlang" href="${altPath || altUrl}" hreflang="${lang === "ja" ? "en" : "ja"}" aria-label="${esc(u.switchAria)}">${esc(u.switchTo)}</a>
+    <a class="tlang" href="${altPath || altUrl}" hreflang="${lang === "ja" ? "en" : "ja"}" lang="${lang === "ja" ? "en" : "ja"}" aria-label="${esc(u.switchAria)}">${esc(u.switchTo)}</a>
   </div>
 </header>
 `;
@@ -272,7 +272,7 @@ function foot(lang) {
     <nav class="tfnav" aria-label="${lang === "ja" ? "サイト内リンク" : "Site links"}">
       <a href="${homePath(lang)}">${esc(u.home)}</a>
       <a href="${indexPath(lang)}">${esc(u.glossary)}</a>
-      <a href="/privacy.html">${esc(u.privacy)}</a>
+      <a href="/privacy.html${lang === "en" ? "#en" : ""}">${esc(u.privacy)}</a>
       <a href="https://kokokikaku.com/" target="_blank" rel="noopener">${esc(u.company)}</a>
     </nav>
     <p class="tfnote">${u.footNote}</p>
@@ -403,7 +403,7 @@ function termPage(t, lang) {
     <p class="ten"><span lang="${lang === "ja" ? "en" : "ja"}">${esc(subOf(t, lang))}</span>${lang === "ja" && t.kana ? `<span class="tkana">読み：${esc(t.kana)}</span>` : ""}</p>
     <p class="tlead">${leadHtml}</p>
 
-    <p class="taltlang"><a href="${altPath}" hreflang="${altLang}">${esc(u.otherLang(shortOf(t, altLang)))}</a></p>
+    <p class="taltlang"><a href="${altPath}" hreflang="${altLang}" lang="${altLang}">${esc(u.otherLang(shortOf(t, altLang)))}</a></p>
 
     <section class="tstep">
       <h2><span class="snum">1</span>${esc(I18N[lang].m1)}</h2>

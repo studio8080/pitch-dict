@@ -47,6 +47,8 @@
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
+  /* EEA・英国・スイスからのアクセスでは、解析・広告の Cookie を既定で使わない（同意バナーは未設置） */
+  gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',region:["AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV","LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE","IS","LI","NO","GB","CH"]});
   gtag('js', new Date());
   gtag('config', 'G-R9LWKKLQ9K');
 </script>
@@ -3415,7 +3417,7 @@ function cardHTML(t){
       </span>
       <span class="cat">${catLabel(t.cat)}</span>
       <h3>${lang==="en"?esc(t.en):t.name}</h3>
-      <span class="en">${lang==="en"?esc(t.name):t.en}</span>
+      <span class="en" lang="${lang==="en"?"ja":"en"}">${lang==="en"?esc(t.name):t.en}</span>
       <span class="one">${lang==="en"&&TR_EN[t.id]&&TR_EN[t.id].one?TR_EN[t.id].one:t.one}</span>
     </button>`;
 }
@@ -3680,7 +3682,7 @@ function openModal(id){
        <div class="rel">${t.rel.map(r=>{const rt=TERMS.find(x=>x.id===r);if(!rt)return"";const rn=en?rt.en:rt.name.split("（")[0].split("／")[0];return `<button onclick="openModal('${r}')">${esc(rn)} →</button>`;}).join("")}</div>
      </div>`:""}
      <div class="affslot" data-aff="modal" data-lang="${lang}" data-term="${t.id}" data-cat="${t.cat}" hidden></div>
-     <p class="mperma"><a href="/terms/${t.id}/">🔗 ${en?"Open the full page for this term":"この用語の詳しいページを開く"} →</a></p>
+     <p class="mperma"><a href="${en?"/en/terms/":"/terms/"}${t.id}/">🔗 ${en?"Open the full page for this term":"この用語の詳しいページを開く"} →</a></p>
    </div>`;
   if(window.PD_AFF_render) try{window.PD_AFF_render(modal);}catch(_){}
   mback.classList.add("open");
@@ -3780,13 +3782,23 @@ document.getElementById("tcount").textContent=TERMS.length;
   }
 })();
 
-/* シェアボタン */
-const SHARE_URL="https://pitch.kokokikaku.com/";
-const SHARE_TEXT="実況の「今の言葉、何？」を3秒で図解⚽ サッカー用語図鑑『ピッチの辞書』";
-document.getElementById("sh-x").href="https://twitter.com/intent/tweet?text="+encodeURIComponent(SHARE_TEXT)+"&url="+encodeURIComponent(SHARE_URL);
-document.getElementById("sh-line").href="https://social-plugins.line.me/lineit/share?url="+encodeURIComponent(SHARE_URL)+"&text="+encodeURIComponent(SHARE_TEXT);
-document.getElementById("sh-fb").href="https://www.facebook.com/sharer/sharer.php?u="+encodeURIComponent(SHARE_URL);
+/* シェアボタン。英語表示のときは英語版トップ（/en/）を英語の文面で共有し、LINE は出さない */
+const SHARE={
+  ja:{url:"https://pitch.kokokikaku.com/",text:"実況の「今の言葉、何？」を3秒で図解⚽ サッカー用語図鑑『ピッチの辞書』"},
+  en:{url:"https://pitch.kokokikaku.com/en/",text:"“What did the commentator just say?” Football terms explained in 3 seconds ⚽ PITCH DICTIONARY"}
+};
+function setShare(){
+  const sh=SHARE[lang]||SHARE.ja;
+  document.getElementById("sh-x").href="https://twitter.com/intent/tweet?text="+encodeURIComponent(sh.text)+"&url="+encodeURIComponent(sh.url);
+  const ln=document.getElementById("sh-line");
+  ln.href="https://social-plugins.line.me/lineit/share?url="+encodeURIComponent(sh.url)+"&text="+encodeURIComponent(sh.text);
+  ln.style.display=lang==="en"?"none":"";
+  document.getElementById("sh-fb").href="https://www.facebook.com/sharer/sharer.php?u="+encodeURIComponent(sh.url);
+}
+setShare();
+const TITLE_JA=document.title;
 document.getElementById("sh-copy").addEventListener("click",async e=>{
+  const SHARE_URL=(SHARE[lang]||SHARE.ja).url;
   try{await navigator.clipboard.writeText(SHARE_URL);
     e.currentTarget.textContent=I18N[lang].copied;
     setTimeout(()=>{document.getElementById("sh-copy").textContent=I18N[lang].shCopy},2000);
@@ -3871,6 +3883,25 @@ function applyLang(l){
   var ol=_qs(".company .cother .lbl");if(ol)ol.textContent=T.cotherLbl;
   var o1=_qs(".company .cother .o1");if(o1)o1.textContent=T.cother1;
   var o2=_qs(".company .cother .o2");if(o2)o2.textContent=T.cother2;
+  document.title=lang==="en"?"PITCH DICTIONARY | Football terms, visualized in 3 seconds":TITLE_JA;
+  var ch=_qs(".company h4");if(ch)ch.textContent=lang==="en"?"Koko Kikaku (kokokikaku)":"ここ企画（kokokikaku）";
+  document.querySelectorAll(".company .cother .sep").forEach(function(e){e.textContent=lang==="en"?" · ":"・";});
+  document.querySelectorAll("footer .fnav a").forEach(function(a){
+    var h=a.getAttribute("href")||"";
+    if(h==="/terms/"||h==="/en/terms/"){a.setAttribute("href",lang==="en"?"/en/terms/":"/terms/");a.textContent=lang==="en"?"📚 All terms":"📚 全用語一覧";}
+    else if(h.indexOf("/privacy.html")===0){a.setAttribute("href",lang==="en"?"/privacy.html#en":"/privacy.html");a.textContent=lang==="en"?"Privacy policy":"プライバシーポリシー";}
+    else if(h==="https://kokokikaku.com/"){a.textContent=lang==="en"?"Koko Kikaku":"ここ企画";}
+    else if(h==="/en/"){a.style.display=lang==="en"?"none":"";}
+  });
+  var cpy=_qs("footer .copy");if(cpy)cpy.textContent=lang==="en"?"© 2026 Koko Kikaku / PITCH DICTIONARY":"© 2026 ここ企画 / ピッチの辞書";
+  if(typeof setShare==="function")setShare();
+  /* 「ピッチの辞書とは」は日本語の検索向けの説明と日本語ページへのリンク集なので、英語表示では出さない */
+  var sb=_qs(".seoblock");if(sb)sb.style.display=lang==="en"?"none":"";
+  /* アフィリエイトの広告主はすべて日本国内向け。英語表示に切り替えたら枠を描き直す（affiliates.js の langs で出し分け） */
+  document.querySelectorAll('.affslot[data-aff="home"]').forEach(function(el){
+    el.setAttribute("data-lang",lang);el.removeAttribute("data-aff-done");el.innerHTML="";el.hidden=true;
+  });
+  if(window.PD_AFF_render)try{window.PD_AFF_render();}catch(_){}
   render();
   if(window.__setTabTop)window.__setTabTop();
 }

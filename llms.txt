@@ -12,112 +12,112 @@
 
 - [Delay](https://pitch.kokokikaku.com/en/terms/delay/): Defending by holding off instead of diving in, to buy time.
 - [Low Block](https://pitch.kokokikaku.com/en/terms/block/): Dropping into your own half and killing space with a wall-like shape.
-- [The Pocket](https://pitch.kokokikaku.com/en/terms/pocket/): Running into the “corner” beside the penalty area.
+- [The Pocket](https://pitch.kokokikaku.com/en/terms/pocket/): Running into the “corner” of the penalty area, wide of the six-yard box.
 - [Between the Lines](https://pitch.kokokikaku.com/en/terms/linegap/): Receiving in the gap between the opponent's defensive and midfield lines.
 - [Channel Run](https://pitch.kokokikaku.com/en/terms/channel/): Running the lane between the full-back and centre-back.
-- [High Press](https://pitch.kokokikaku.com/en/terms/press/): Winning the ball high up as a group, deep in the opponent's half.
+- [High Press](https://pitch.kokokikaku.com/en/terms/press/): Hunting the ball as a group, deep in the opponent's half.
 - [Retreat](https://pitch.kokokikaku.com/en/terms/retreat/): Not pressing, and dropping everyone back into your own half.
 - [Isolation](https://pitch.kokokikaku.com/en/terms/isolation/): Deliberately clearing team-mates away to leave your star 1v1.
-- [Cut Inside](https://pitch.kokokikaku.com/en/terms/cutin/): Dribbling diagonally inside from the wing toward the centre.
+- [Cut Inside](https://pitch.kokokikaku.com/en/terms/cutin/): Dribbling diagonally inside from the wing towards the centre.
 - [Overlap](https://pitch.kokokikaku.com/en/terms/overlap/): A player from behind running past the ball-carrier to go forward.
 - [Second Ball](https://pitch.kokokikaku.com/en/terms/secondball/): The loose ball that spills out after a duel.
 - [Compact](https://pitch.kokokikaku.com/en/terms/compact/): Whether the shape is squeezed tight or stretched loose.
 - [Half-space](https://pitch.kokokikaku.com/en/terms/halfspace/): The zone “between centre and wing” when the pitch is split into five vertical lanes.
 - [Five Lanes](https://pitch.kokokikaku.com/en/terms/lanes5/): Designing attacks by dividing the pitch into five vertical lanes.
-- [Positional Play](https://pitch.kokokikaku.com/en/terms/positional/): Out-doing opponents through positioning — designing “where to stand.”
+- [Positional Play](https://pitch.kokokikaku.com/en/terms/positional/): Outdoing opponents through positioning, by designing “where to stand.”
 - [False Nine](https://pitch.kokokikaku.com/en/terms/false9/): A centre-forward who drops from the front line into midfield.
 - [Inverted Full-back](https://pitch.kokokikaku.com/en/terms/falsesb/): A full-back who plays in central midfield rather than out wide.
 - [Negative Transition](https://pitch.kokokikaku.com/en/terms/negatrans/): The moment of switching from attack to defence.
 - [Positive Transition](https://pitch.kokokikaku.com/en/terms/positrans/): The moment of switching from defence to attack.
 - [Gegenpressing](https://pitch.kokokikaku.com/en/terms/gegen/): Immediately swarming to win the ball back on the spot after losing it.
 - [Build-up](https://pitch.kokokikaku.com/en/terms/buildup/): Constructing the attack by passing out from the GK and defenders.
-- [Overload](https://pitch.kokokikaku.com/en/terms/overload/): Deliberately gathering players in one area to create a numbers-up.
-- [Lay-off](https://pitch.kokokikaku.com/en/terms/layoff/): A forward who receives a vertical pass and knocks it short to a runner behind.
+- [Overload](https://pitch.kokokikaku.com/en/terms/overload/): Deliberately gathering players in one area to outnumber the opponent there.
+- [Lay-off](https://pitch.kokokikaku.com/en/terms/layoff/): A forward receiving a pass into feet and knocking it short to a runner from behind.
 - [Third Man Run](https://pitch.kokokikaku.com/en/terms/thirdman/): A “third man,” not the passer or receiver, running in to collect.
 - [Anchor](https://pitch.kokokikaku.com/en/terms/anchor/): A lone defensive midfielder stationed in front of the back line.
 - [Storming](https://pitch.kokokikaku.com/en/terms/storming/): Kick, recover, press instantly — a philosophy of creating storm-like chaos.
 - [Numerical Superiority](https://pitch.kokokikaku.com/en/terms/numadv/): Being better off than the opponent in numbers, in position, or in individual quality.
 - [Zonal Marking](https://pitch.kokokikaku.com/en/terms/zonal/): “Guard a space” or “track a man” — the two main defensive systems.
-- [Expected Goals](https://pitch.kokokikaku.com/en/terms/xg/): A 0–1 figure for the chance a given shot is scored.
+- [Expected Goals](https://pitch.kokokikaku.com/en/terms/xg/): A value from 0 to 1 for how likely a shot is to go in.
 - [Expected Assists](https://pitch.kokokikaku.com/en/terms/xa/): A figure for how likely a pass was to lead to a goal.
-- [Passes Per Defensive Action](https://pitch.kokokikaku.com/en/terms/ppda/): How many opponent passes are allowed per one defensive action.
+- [Passes Per Defensive Action](https://pitch.kokokikaku.com/en/terms/ppda/): How many opponent passes are allowed per defensive action.
 - [Heat Map](https://pitch.kokokikaku.com/en/terms/heatmap/): A colour-shaded map of where a player spent the most time.
-- [Pass Network](https://pitch.kokokikaku.com/en/terms/passnet/): A diagram of who passed to whom, shown by line thickness.
+- [Pass Network](https://pitch.kokokikaku.com/en/terms/passnet/): A diagram of who passed to whom most often, shown by line thickness.
 - [Possession](https://pitch.kokokikaku.com/en/terms/poss/): The share of match time a team held the ball.
-- [Progressive Pass](https://pitch.kokokikaku.com/en/terms/progpass/): A pass that advances the ball significantly toward goal.
+- [Progressive Pass](https://pitch.kokokikaku.com/en/terms/progpass/): A pass that advances the ball significantly towards goal.
 - [Field Tilt](https://pitch.kokokikaku.com/en/terms/tilt/): Share of play in the opponent's final third — who was pinning who back.
 - [Vertical Pass into Feet](https://pitch.kokokikaku.com/en/terms/kusabi/): A sharp vertical pass into a forward's feet.
 - [Cover Shadow](https://pitch.kokokikaku.com/en/terms/covershadow/): Closing down while using your back to block a passing lane.
-- [Press Trap](https://pitch.kokokikaku.com/en/terms/hameru/): Herding into a defensive trap is ‘the trap’; escaping it is ‘breaking out.’
+- [Press Trap](https://pitch.kokokikaku.com/en/terms/hameru/): Forcing opponents into a pressing trap is ‘trapping’; slipping out of it is ‘escaping.’
 - [Duel](https://pitch.kokokikaku.com/en/terms/duel/): A one-on-one contest for the ball.
-- [Press Back](https://pitch.kokokikaku.com/en/terms/pressback/): A forward pressing while running back toward his own goal.
+- [Press Back](https://pitch.kokokikaku.com/en/terms/pressback/): A forward pressing while running back towards his own goal.
 - [Run in Behind](https://pitch.kokokikaku.com/en/terms/uranuke/): Breaking into the space behind the opponent's back line.
-- [Through Pass](https://pitch.kokokikaku.com/en/terms/through/): A pass into empty space for a runner to meet.
+- [Through Pass](https://pitch.kokokikaku.com/en/terms/through/): A pass into empty space for a team-mate to run onto.
 - [Early Cross](https://pitch.kokokikaku.com/en/terms/earlycross/): A cross played early rather than after reaching the byline.
-- [Intensity](https://pitch.kokokikaku.com/en/terms/intensity/): Play intensity including duels, transitions and running.
+- [Intensity](https://pitch.kokokikaku.com/en/terms/intensity/): How hard a team plays — covering duels, transitions and running.
 - [Flick](https://pitch.kokokikaku.com/en/terms/flick/): A one-touch play that only changes the ball's direction.
 - [Long Throw-in](https://pitch.kokokikaku.com/en/terms/longthrow/): Hurling a throw-in straight into the box as an attacking weapon.
-- [Thirds of the Pitch](https://pitch.kokokikaku.com/en/terms/thirds/): Splitting the pitch into three horizontal parts, numbered 1-2-3 from farthest to the attacker.
-- [Vital Area](https://pitch.kokokikaku.com/en/terms/vital/): The danger zone in front of the box, between the DF and MF lines.
+- [Thirds of the Pitch](https://pitch.kokokikaku.com/en/terms/thirds/): Splitting the pitch into three bands, zones 1–3, counted from the attacking team's own goal.
+- [Vital Area](https://pitch.kokokikaku.com/en/terms/vital/): The danger zone in front of the box, between the opposition's defence and midfield.
 - [Mid Block](https://pitch.kokokikaku.com/en/terms/midblock/): Setting the defensive block at mid height, in the middle third.
-- [Conducción](https://pitch.kokokikaku.com/en/terms/carry/): A centre-back or similar carrying the ball forward by dribbling.
+- [Conducción](https://pitch.kokokikaku.com/en/terms/carry/): A player — often a centre-back — dribbling the ball forward.
 - [Salida Lavolpiana](https://pitch.kokokikaku.com/en/terms/salida/): A midfielder dropping between the CBs during build-up to make a back three.
 - [Diagonal Run](https://pitch.kokokikaku.com/en/terms/diagonal/): A run cutting across the pitch on the diagonal.
 - [Pinning](https://pitch.kokokikaku.com/en/terms/pin/): Fixing an opponent in place through positioning alone.
 - [High Line](https://pitch.kokokikaku.com/en/terms/highline/): A defensive setting that keeps the last line high up.
 - [Counter Attack](https://pitch.kokokikaku.com/en/terms/counter/): A fast attack right after winning the ball, before the opponent gets set.
 - [Volante](https://pitch.kokokikaku.com/en/terms/volante/): A defensive midfielder steering both phases from the base of midfield.
-- [Offside](https://pitch.kokokikaku.com/en/terms/offside/): Being ahead of the second-last defender when the pass is played is an offence.
-- [Offside Trap](https://pitch.kokokikaku.com/en/terms/offtrap/): Deliberately stepping the DF line up to catch a forward offside.
+- [Offside](https://pitch.kokokikaku.com/en/terms/offside/): Receiving a pass after being beyond the second-last defender when it was played is an offence.
+- [Offside Trap](https://pitch.kokokikaku.com/en/terms/offtrap/): Deliberately stepping the back line up to catch a forward offside.
 - [Denying an Obvious Goal-Scoring Opportunity](https://pitch.kokokikaku.com/en/terms/dogso/): “Denying an obvious goal-scoring opportunity” — in principle a straight red.
-- [Video Assistant Referee](https://pitch.kokokikaku.com/en/terms/var/): An assistant referee using video, and the pitch-side monitor review.
-- [Advantage](https://pitch.kokokikaku.com/en/terms/adv/): Not blowing for a foul when letting play go on favours the attacking side.
-- [Golazo](https://pitch.kokokikaku.com/en/terms/golasso/): A super goal that makes you shout out loud.
+- [Video Assistant Referee](https://pitch.kokokikaku.com/en/terms/var/): A video official who assists the referee, and the pitch-side monitor review.
+- [Advantage](https://pitch.kokokikaku.com/en/terms/adv/): Not blowing for a foul when letting play go on favours the team that was fouled.
+- [Golazo](https://pitch.kokokikaku.com/en/terms/golasso/): A stunning goal that makes you shout out loud.
 - [Kamada's 1mm](https://pitch.kokokikaku.com/en/terms/kamada1mm/): The equaliser vs the Netherlands at the 2026 WC that grazed Kamada's head by a millimetre.
 - [Physical Contact](https://pitch.kokokikaku.com/en/terms/physcontact/): Bodying up. Fair shoulder-to-shoulder contact is part of football.
-- [Designed Set Piece](https://pitch.kokokikaku.com/en/terms/designed/): A free kick or corner broken down by a routine drilled in training.
+- [Designed Set Piece](https://pitch.kokokikaku.com/en/terms/designed/): A free kick or corner routine, drilled in training, that breaks a defence down.
 - [Momentum Arrow](https://pitch.kokokikaku.com/en/terms/arrow/): The direction a player's momentum and weight are pointing.
-- [Interception](https://pitch.kokokikaku.com/en/terms/intercept/): Reading and stealing an opponent's pass in flight.
-- [Trap](https://pitch.kokokikaku.com/en/terms/trap/): The skill of controlling an incoming ball into the next play.
-- [Overhead Kick](https://pitch.kokokikaku.com/en/terms/overhead/): Leaping to kick a ball higher than your head backward.
+- [Interception](https://pitch.kokokikaku.com/en/terms/intercept/): Reading an opponent's pass and cutting it out.
+- [Trap](https://pitch.kokokikaku.com/en/terms/trap/): The skill of controlling an incoming ball and setting up your next move.
+- [Overhead Kick](https://pitch.kokokikaku.com/en/terms/overhead/): Leaping to kick a ball above head height backwards over yourself.
 - [Hold-up Play](https://pitch.kokokikaku.com/en/terms/postplay/): A forward receiving with their back to goal, shielding the ball from the defender and holding it until team-mates arrive.
 - [Long-range Shot](https://pitch.kokokikaku.com/en/terms/midshot/): A long-range shot from outside the penalty area.
 - [One-Two](https://pitch.kokokikaku.com/en/terms/wallpass/): A two-player combo: play it off a team-mate and take the return on the run.
 - [Cross](https://pitch.kokokikaku.com/en/terms/cross/): A sideways or diagonal ball from wide into the box.
 - [Near Post & Far Post](https://pitch.kokokikaku.com/en/terms/nearfar/): The side nearer the ball is the near post; the far side is the far post.
-- [Clearance](https://pitch.kokokikaku.com/en/terms/clear/): Booting a dangerous ball far away from in front of goal.
+- [Clearance](https://pitch.kokokikaku.com/en/terms/clear/): Booting a dangerous ball well away from goal.
 - [Super Sub](https://pitch.kokokikaku.com/en/terms/supersub/): A trump-card substitute who changes the game off the bench.
 - [Holding the Ball](https://pitch.kokokikaku.com/en/terms/tame/): Holding the ball to make time and wait for team-mates to join.
 - [Width](https://pitch.kokokikaku.com/en/terms/width/): Using the pitch's full width. Waiting out wide is ‘staying wide’; coming inside is ‘tucking in.’
 - [Switch of Play](https://pitch.kokokikaku.com/en/terms/sidechange/): A long pass that swings the ball to the opposite flank at once.
 - [Covering](https://pitch.kokokikaku.com/en/terms/covering/): Defence that instantly backs up behind a beaten team-mate.
-- [Malícia](https://pitch.kokokikaku.com/en/terms/malicia/): ‘Cunning’ used to win within the rules.
-- [Power Play](https://pitch.kokokikaku.com/en/terms/powerplay/): An all-out assault late on, sending tall players and even the keeper forward to lob it in.
-- [Punt Kick](https://pitch.kokokikaku.com/en/terms/punt/): A GK dropping the ball from his hands and kicking it long directly.
+- [Malícia](https://pitch.kokokikaku.com/en/terms/malicia/): The ‘cunning’ to win within the rules.
+- [Power Play](https://pitch.kokokikaku.com/en/terms/powerplay/): An all-out assault late on, sending tall players and even the keeper forward to launch it into the box.
+- [Punt Kick](https://pitch.kokokikaku.com/en/terms/punt/): A keeper dropping the ball from his hands and kicking it long before it bounces.
 - [Derby](https://pitch.kokokikaku.com/en/terms/derby/): A match between rival clubs from the same city or region.
 - [Giant Killing](https://pitch.kokokikaku.com/en/terms/giantkill/): A big upset where an underdog beats a powerhouse.
 - [Shadow Striker](https://pitch.kokokikaku.com/en/terms/shadow/): An attacker just behind the CF — the ‘2’ in a 3-4-2-1.
-- [False Shadow](https://pitch.kokokikaku.com/en/terms/falseshadow/): A variable where the shadow leaves his spot to drop into midfield and build.
+- [False Shadow](https://pitch.kokokikaku.com/en/terms/falseshadow/): A rotation where the shadow leaves his spot, drops into midfield and helps build play.
 - [Polyvalent](https://pitch.kokokikaku.com/en/terms/polyvalent/): The versatility to play several positions at a high level.
 - [Mitoma's 1mm](https://pitch.kokokikaku.com/en/terms/mitoma1mm/): The historic 2022 WC vs Spain call where the ball stayed on the line by just 1.88mm.
 - [Hydration Break](https://pitch.kokokikaku.com/en/terms/hydration/): A roughly one-minute drinks break once per half in extreme heat.
-- [Additional Time](https://pitch.kokokikaku.com/en/terms/addtime/): Time added at the end for stoppages. Formerly ‘loss time.’
-- [Handball](https://pitch.kokokikaku.com/en/terms/hand/): An offence of handling the ball with hand or arm — but not ‘touch = automatic foul.’
-- [Penalties & Free Kicks](https://pitch.kokokikaku.com/en/terms/pkfk/): Restart variations that change by the place and type of foul.
+- [Additional Time](https://pitch.kokokikaku.com/en/terms/addtime/): Time added at the end for stoppages. Also known as stoppage time.
+- [Handball](https://pitch.kokokikaku.com/en/terms/hand/): Handling the ball with the hand or arm — but a touch isn't automatically a foul.
+- [Penalties & Free Kicks](https://pitch.kokokikaku.com/en/terms/pkfk/): Restarts that vary with where the foul is and what kind it is.
 - [Simulation](https://pitch.kokokikaku.com/en/terms/simulation/): Falling with no contact to deceive the referee. A cautionable offence.
 - [Own Goal](https://pitch.kokokikaku.com/en/terms/owngoal/): Putting the ball into your own net.
-- [Assist](https://pitch.kokokikaku.com/en/terms/assist/): The record for the pass ‘one before’ a goal.
+- [Assist](https://pitch.kokokikaku.com/en/terms/assist/): Credit for the final pass that sets up a goal.
 - [Hat-trick](https://pitch.kokokikaku.com/en/terms/hattrick/): One player scoring three goals in a single match.
 - [Clean Sheet](https://pitch.kokokikaku.com/en/terms/cleansheet/): Finishing a match without conceding. A medal for the GK and defence.
 - [Points](https://pitch.kokokikaku.com/en/terms/points/): Win = 3, draw = 1, loss = 0 — the points that decide league standings.
 - [Actual Playing Time](https://pitch.kokokikaku.com/en/terms/apt/): The net time the ball was actually in play out of the 90 minutes.
-- [Sano Recovery](https://pitch.kokokikaku.com/en/terms/sanokaishu/): A phenomenon of hoovering up midfield loose balls at an absurd rate. From Kaishu Sano.
+- [Sano Recovery](https://pitch.kokokikaku.com/en/terms/sanokaishu/): Hoovering up loose balls in midfield at an absurd rate. Named after Kaishu Sano.
 - [Passer & Receiver](https://pitch.kokokikaku.com/en/terms/dashiukete/): The passer and the receiver. A pass is always a joint effort by two.
 - [Closing the Game](https://pitch.kokokikaku.com/en/terms/gameclose/): Ending the match with the lead intact. The specialist is the ‘closer.’
 - [Cutting the Passing Lane](https://pitch.kokokikaku.com/en/terms/cutcourse/): Blocking passing lanes with body angle and positioning to narrow the opponent's options.
 - [Putting a Lid On](https://pitch.kokokikaku.com/en/terms/futa/): Sealing off a dangerous route or player so it can't be used.
-- [Cutback](https://pitch.kokokikaku.com/en/terms/cutback/): A last pass from near the goal line back away from goal.
-- [Shifting Gears](https://pitch.kokokikaku.com/en/terms/gearup/): Deliberately raising the attacking tempo by a level.
+- [Cutback](https://pitch.kokokikaku.com/en/terms/cutback/): A final pass pulled back from near the goal line, away from goal.
+- [Shifting Gears](https://pitch.kokokikaku.com/en/terms/gearup/): Deliberately stepping up the attacking tempo a notch.
 - [The Ace as a Tactic](https://pitch.kokokikaku.com/en/terms/tacticalace/): Making ‘let the ace go 1v1’ itself a team rule.
 - [Football IQ](https://pitch.kokokikaku.com/en/terms/footiq/): The ‘mental speed’ to read a situation, predict, and choose the best option.
 - [Fluid System](https://pitch.kokokikaku.com/en/terms/kahen/): A setup that reshapes the formation between attacking and defending phases.

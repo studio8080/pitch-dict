@@ -180,7 +180,7 @@ const UI = {
     otherLang: (name) => `🇬🇧 Read this term in English: ${name} →`,
   },
   en: {
-    htmlLang: "en", ogLocale: "en_US",
+    htmlLang: "en", ogLocale: "en_GB",
     brand: "PITCH DICTIONARY", brandsub: "Football terms, visualized",
     search: "Search terms (e.g. half-space, xG)", searchAria: "Search terms",
     switchTo: "日本語", switchAria: "日本語に切り替え",
@@ -595,7 +595,7 @@ function enLanding() {
         <dt>Are the diagrams real match footage?</dt>
         <dd>No. Every board is an original SVG animation. No footage or photographs are used.</dd>
         <dt>Does it work offline?</dt>
-        <dd>Once you have opened it, the pages are stored by your browser and can be added to your home screen like an app.</dd>
+        <dd>Once you’ve opened it, your browser keeps the pages, and you can add it to your home screen like an app.</dd>
       </dl>
     </section>
 

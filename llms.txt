@@ -84,7 +84,7 @@
 - [Long-range Shot](https://pitch.kokokikaku.com/en/terms/midshot/): A long-range shot from outside the penalty area.
 - [One-Two](https://pitch.kokokikaku.com/en/terms/wallpass/): A two-player combo: play it off a team-mate and take the return on the run.
 - [Cross](https://pitch.kokokikaku.com/en/terms/cross/): A sideways or diagonal ball from wide into the box.
-- [Near Post & Far Post](https://pitch.kokokikaku.com/en/terms/nearfar/): The side nearer the ball is the near post; the far side is the far post.
+- [Near Post & Far Post](https://pitch.kokokikaku.com/en/terms/nearfar/): In football, the near post is the goalpost closest to the ball; the far post is the goalpost farther away.
 - [Clearance](https://pitch.kokokikaku.com/en/terms/clear/): Booting a dangerous ball well away from goal.
 - [Super Sub](https://pitch.kokokikaku.com/en/terms/supersub/): A trump-card substitute who changes the game off the bench.
 - [Holding the Ball](https://pitch.kokokikaku.com/en/terms/tame/): Holding the ball to make time and wait for team-mates to join.

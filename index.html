@@ -972,6 +972,7 @@ html[data-theme="dark"] .rel button:hover{background:#12294A}
     <nav class="fnav" aria-label="サイト内リンク">
       <a href="/terms/">📚 全用語一覧</a>
       <a href="/privacy.html">プライバシーポリシー</a>
+      <a data-contact href="https://docs.google.com/forms/d/e/1FAIpQLSeqM293xJzyK9ft7QF4lvvim8A679jueHyFA1YDXeUypalYwA/viewform" target="_blank" rel="noopener">お問い合わせ</a>
       <a href="https://kokokikaku.com/" target="_blank" rel="noopener">ここ企画</a>
       <a href="/en/" hreflang="en" lang="en">🇬🇧 English</a>
     </nav>
@@ -3895,6 +3896,7 @@ function applyLang(l){
     var h=a.getAttribute("href")||"";
     if(h==="/terms/"||h==="/en/terms/"){a.setAttribute("href",lang==="en"?"/en/terms/":"/terms/");a.textContent=lang==="en"?"📚 All terms":"📚 全用語一覧";}
     else if(h.indexOf("/privacy.html")===0){a.setAttribute("href",lang==="en"?"/privacy.html#en":"/privacy.html");a.textContent=lang==="en"?"Privacy policy":"プライバシーポリシー";}
+    else if(a.hasAttribute("data-contact")){a.textContent=lang==="en"?"Contact":"お問い合わせ";}
     else if(h==="https://kokokikaku.com/"){a.textContent=lang==="en"?"Koko Kikaku":"ここ企画";}
     else if(h==="/en/"){a.style.display=lang==="en"?"none":"";}
   });

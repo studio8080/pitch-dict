@@ -168,7 +168,7 @@ const UI = {
     search: "用語を検索（例：ハーフスペース、xG）", searchAria: "用語を検索",
     switchTo: "English", switchAria: "Switch to English",
     home: "🏠 ホーム（動く戦術ボード）", glossary: "📚 全用語一覧",
-    privacy: "プライバシーポリシー", company: "ここ企画",
+    privacy: "プライバシーポリシー", contact: "お問い合わせ", company: "ここ企画",
     footNote: "図解はすべてオリジナルの戦術ボードで表現しています（実際の試合映像・写真は使用していません）。<br>本サイトにはアフィリエイト広告（PR）を含む場合があります。",
     crumbHome: "ピッチの辞書", crumbGlossary: "用語一覧",
     vizCap: "オリジナルの戦術ボードで図解（青＝注目チーム／赤＝相手、攻撃方向は左→右）。ボードは自動で動きます。",
@@ -185,7 +185,7 @@ const UI = {
     search: "Search terms (e.g. half-space, xG)", searchAria: "Search terms",
     switchTo: "日本語", switchAria: "日本語に切り替え",
     home: "🏠 Home", glossary: "📚 All terms",
-    privacy: "Privacy policy", company: "Koko Kikaku",
+    privacy: "Privacy policy", contact: "Contact", company: "Koko Kikaku",
     footNote: "All diagrams are original tactics-board illustrations. No real match footage or photographs are used.<br>This site may contain affiliate advertising (PR).",
     crumbHome: "PITCH DICTIONARY", crumbGlossary: "All terms",
     vizCap: "An original tactics board (blue = the team in focus, red = the opponent; attacking left to right). The board animates on its own.",
@@ -274,6 +274,7 @@ function foot(lang) {
       <a href="${homePath(lang)}">${esc(u.home)}</a>
       <a href="${indexPath(lang)}">${esc(u.glossary)}</a>
       <a href="/privacy.html${lang === "en" ? "#en" : ""}">${esc(u.privacy)}</a>
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSeqM293xJzyK9ft7QF4lvvim8A679jueHyFA1YDXeUypalYwA/viewform" target="_blank" rel="noopener">${esc(u.contact)}</a>
       <a href="https://kokokikaku.com/" target="_blank" rel="noopener">${esc(u.company)}</a>
     </nav>
     <p class="tfnote">${u.footNote}</p>

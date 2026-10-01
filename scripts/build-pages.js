@@ -282,6 +282,8 @@ function foot(lang) {
   </div>
 </footer>
 <script src="/affiliates.js" defer></script>
+<!-- koko-ask-chatgpt -->
+<script src="/ask-chatgpt.js?v=1" data-product="pitch" defer></script>
 </body>
 </html>
 `;

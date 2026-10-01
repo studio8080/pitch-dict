@@ -3658,7 +3658,7 @@ function openModal(id){
      <span class="en">${esc(sub)}</span>
      <button class="close" onclick="closeModal()" aria-label="${L.mClose}">✕</button>
    </div>
-   <div class="mshare">
+   <div class="mshare" data-url="https://pitch.kokokikaku.com/${en?'en/':''}terms/${t.id}/" data-title="${esc(termShareText(t.id))}">
      <span class="mslbl">${en?"Share this term":"この用語をシェア"}</span>
      <button class="msbtn x" type="button" onclick="shareTermX('${t.id}')" aria-label="X / Twitter">𝕏 ${en?"Post":"ポスト"}</button>
      ${en?`<button class="msbtn line" type="button" onclick="shareTermWA('${t.id}')" aria-label="WhatsApp">WhatsApp</button>`:`<button class="msbtn line" type="button" onclick="shareTermLine('${t.id}')" aria-label="LINE">LINE</button>`}
@@ -3962,6 +3962,6 @@ function applyLang(l){
 <!-- アフィリエイト広告（A8.net / もしもアフィリエイト）。掲載内容の設定は affiliates.js を編集する -->
 <script src="/affiliates.js" defer></script>
 <!-- koko-ask-chatgpt -->
-<script src="/ask-chatgpt.js?v=1" data-product="pitch" defer></script>
+<script src="/ask-chatgpt.js?v=2" data-product="pitch" defer></script>
 </body>
 </html>

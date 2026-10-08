@@ -4,12 +4,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>ピッチの辞書 | サッカー用語を、観ながら3秒で。</title>
-<meta name="description" content="ハーフスペース？ネガトラ？xG？——サッカー実況・コラム・データの専門用語118語を、動く戦術ボードで3秒図解。初心者のためのサッカー用語図鑑Webアプリ。">
+<title>ピッチの辞書｜動く図解で学ぶサッカー用語｜ここ企画</title>
+<meta name="description" content="ここ企画のピッチの辞書は、サッカー用語118語を短い説明と動く戦術ボードで学べる無料の用語集です。実況・戦術・データ・競技規則の用語を図解。登録不要で、日本語と英語に対応しています。">
 <meta name="theme-color" content="#1536C4"><!-- deploy r2 -->
 <meta name="apple-itunes-app" content="app-id=6794986070">
-<meta property="og:title" content="ピッチの辞書 | サッカー用語を、観ながら3秒で。">
-<meta property="og:description" content="実況の「今の言葉、何？」を動く戦術ボードで3秒図解。全118語収録のサッカー用語図鑑。">
+<meta property="og:title" content="ピッチの辞書｜動く図解で学ぶサッカー用語｜ここ企画">
+<meta property="og:description" content="ここ企画のピッチの辞書は、サッカー用語118語を短い説明と動く戦術ボードで学べる無料の用語集です。実況・戦術・データ・競技規則の用語を図解。登録不要で、日本語と英語に対応しています。">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="ピッチの辞書">
 <meta property="og:locale" content="ja_JP">
@@ -22,8 +22,8 @@
 <link rel="alternate" hreflang="en" href="https://pitch.kokokikaku.com/en/">
 <link rel="alternate" hreflang="x-default" href="https://pitch.kokokikaku.com/en/">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="ピッチの辞書 | サッカー用語を、観ながら3秒で。">
-<meta name="twitter:description" content="実況の「今の言葉、何？」を動く戦術ボードで3秒図解。全118語収録のサッカー用語図鑑。">
+<meta name="twitter:title" content="ピッチの辞書｜動く図解で学ぶサッカー用語｜ここ企画">
+<meta name="twitter:description" content="ここ企画のピッチの辞書は、サッカー用語118語を短い説明と動く戦術ボードで学べる無料の用語集です。実況・戦術・データ・競技規則の用語を図解。登録不要で、日本語と英語に対応しています。">
 <meta name="twitter:image" content="https://pitch.kokokikaku.com/og-v2.png">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://partner.googleadservices.com https://www.googletagservices.com https://adservice.google.com https://*.g.doubleclick.net https://ep2.adtrafficquality.google https://fundingchoicesmessages.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com https://*.googlesyndication.com https://*.g.doubleclick.net https://*.google.com https://*.a8.net https://*.moshimo.com https://*.media-amazon.com https://*.ssl-images-amazon.com https://*.rakuten.co.jp https://*.yimg.jp https://ep1.adtrafficquality.google; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.g.doubleclick.net https://ep1.adtrafficquality.google https://ep2.adtrafficquality.google https://csi.gstatic.com https://googleads.g.doubleclick.net https://fundingchoicesmessages.google.com; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://*.googlesyndication.com https://*.g.doubleclick.net https://ep1.adtrafficquality.google https://ep2.adtrafficquality.google https://www.google.com; object-src 'none'; base-uri 'self'; form-action 'none'">
@@ -3889,7 +3889,11 @@ function applyLang(l){
   var ol=_qs(".company .cother .lbl");if(ol)ol.textContent=T.cotherLbl;
   var o1=_qs(".company .cother .o1");if(o1)o1.textContent=T.cother1;
   var o2=_qs(".company .cother .o2");if(o2)o2.textContent=T.cother2;
-  document.title=lang==="en"?"PITCH DICTIONARY | Football terms, visualized in 3 seconds":TITLE_JA;
+  document.title=lang==="en"?"PITCH DICTIONARY — Football terms with animated boards | Koko Kikaku":TITLE_JA;
+  var metaDesc=lang==="en"?'PITCH DICTIONARY by Koko Kikaku is a free visual glossary of 118 football terms. Learn commentary, tactics, stats and Laws of the Game terms with short explanations and animated tactics boards. No sign-up.':'ここ企画のピッチの辞書は、サッカー用語118語を短い説明と動く戦術ボードで学べる無料の用語集です。実況・戦術・データ・競技規則の用語を図解。登録不要で、日本語と英語に対応しています。';
+  ["description","twitter:description"].forEach(function(n){var m=document.querySelector('meta[name="'+n+'"]');if(m)m.content=metaDesc;});
+  ["og:title","og:description"].forEach(function(n){var m=document.querySelector('meta[property="'+n+'"]');if(m)m.content=n==="og:title"?document.title:metaDesc;});
+  document.querySelector('meta[name="twitter:title"]').content=document.title;
   var ch=_qs(".company h4");if(ch)ch.textContent=lang==="en"?"Koko Kikaku (kokokikaku)":"ここ企画（kokokikaku）";
   document.querySelectorAll(".company .cother .sep").forEach(function(e){e.textContent=lang==="en"?" · ":"・";});
   document.querySelectorAll("footer .fnav a").forEach(function(a){

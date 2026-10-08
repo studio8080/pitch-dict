@@ -533,8 +533,8 @@ function enLanding() {
   const url = abs("/en/");
   const altPath = "/";
   const altUrl = abs(altPath);
-  const title = `PITCH DICTIONARY — ${n} football terms explained with animated tactics boards`;
-  const desc = `Half-space? Negative transition? xG? A beginner-friendly visual glossary of ${n} football terms used in live commentary, tactics columns, stats and the Laws of the Game. Every term comes with its own animated tactics board.`;
+  const title = 'PITCH DICTIONARY — Football terms with animated boards | Koko Kikaku';
+  const desc = `PITCH DICTIONARY by Koko Kikaku is a free visual glossary of ${n} football terms. Learn commentary, tactics, stats and Laws of the Game terms with short explanations and animated tactics boards. No sign-up.`;
   const jsonld = [
     {
       "@context": "https://schema.org", "@type": "WebSite", name: "PITCH DICTIONARY",
@@ -755,6 +755,19 @@ function writePage(relDir, html) {
   const dir = path.join(ROOT, relDir);
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, "index.html"), html);
+}
+
+// Top-page metadata edits do not change term content or its modification dates.
+// Keep the existing stylesheet version when regenerating only the English landing page.
+if (process.argv.includes("--english-home-only")) {
+  const file = path.join(ROOT, "en", "index.html");
+  const previous = fs.readFileSync(file, "utf8");
+  const cssLink = previous.match(/<link rel="stylesheet" href="\/terms\.css\?v=[^"]+">/);
+  let html = enLanding();
+  if (cssLink) html = html.replace(/<link rel="stylesheet" href="\/terms\.css\?v=[^"]+">/, cssLink[0]);
+  writePage("en", html);
+  console.log("English landing page generated; term pages and their dates preserved.");
+  process.exit(0);
 }
 
 fs.rmSync(path.join(ROOT, "terms"), { recursive: true, force: true });

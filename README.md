@@ -135,6 +135,17 @@ node -e "require('http');" && npx --yes serve . -p 8899
 
 ## iOSアプリ版との関係
 
+`app-ads.txt` はiOS広告枠の販売元を示す公開ファイル。2026-10-10にAdMobの
+「app-ads.txt の設定方法」で表示されたレコードを転記した。Web広告用の `ads.txt` と
+同じパブリッシャーIDだが、クローラーが参照するファイル名は別なので両方を保持する。
+
+App StoreのデベロッパWebサイトが `pitch.kokokikaku.com` を指すため、公開後は
+`https://pitch.kokokikaku.com/app-ads.txt` がHTTP 200と上記レコードを返すことを確認する。
+AdMobのストア紐付け、アプリ審査、広告リクエスト、ファイルの検出状態はそれぞれ確認が必要。
+ファイル追加だけで審査承認や広告配信の開始を保証するものではない。
+参照: [Googleの設定手順](https://support.google.com/admob/answer/9363762?hl=en-GB)・
+[クロール条件](https://support.google.com/admob/answer/9679128)。
+
 iOSアプリ（別リポジトリ `pitch-app`）は `scripts/build-data.js` でこの `index.html` から
 用語データと戦術ボードHTMLを抽出している。`TERMS` / `VIZ` / `CAT` / `EMOJI` / `TR_EN` / `I18N` / `TREND` の
 **変数名と構造を変えるとアプリ側のビルドが壊れる**ので注意する。

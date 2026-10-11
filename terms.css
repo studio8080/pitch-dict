@@ -100,6 +100,9 @@ ol.seocats li{list-style:none}
 .seolinks a{font-size:12.5px;font-weight:700;color:#0E6EAF;text-decoration:none;background:#F1F6FF;border:1px solid rgba(30,150,224,.28);border-radius:999px;padding:4px 11px}
 .seolinks a:hover{background:#E2EEFF}
 /* affiliate slot（affiliates.js が描画） */
+.tdisplay{margin-top:26px;min-width:0;min-height:280px}
+.tdisplay-label{font-size:11px;color:var(--muted);margin-bottom:8px;text-align:center}
+.tdisplay:has(.adsbygoogle[data-ad-status="unfilled"]){display:none}
 .affslot{margin-top:26px}
 .affbox{border:2px dashed rgba(20,40,90,.18);border-radius:16px;padding:14px 16px 16px;background:#FBFCFF;position:relative}
 .affbox .afft{display:flex;align-items:center;gap:8px;font-family:var(--round);font-weight:900;font-size:15px;color:#12203C;margin-bottom:10px}

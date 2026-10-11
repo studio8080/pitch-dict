@@ -33,6 +33,8 @@
  *                             英語ページ(/en/)は世界中から読まれるため、日本国内限定の
  *                             サービスを出しても成約せず体験も損なう。海外でも申し込める
  *                             広告主と提携できたら langs に "en" を足すこと。
+ *   contextPriority:10       … 用語ページ・モーダルでの掲載優先度（省略時0）。
+ *                             内容に直接関連する広告を優先。トップの順序には影響しない。
  *
  * ▼ 法令対応（2023年10月〜 景品表示法ステマ規制）
  *   広告枠には自動で「PR」表記と disclosure の文言が付きます。消さないでください。
@@ -53,6 +55,11 @@ window.PD_AFF = {
     home: "⚽ サッカー観戦をもっと楽しむ",
     term: "⚽ この用語を「実際の試合」で確かめる",
     modal: "⚽ 観戦をもっと楽しむ",
+  },
+  contextTitles: {
+    column: "⚽ 戦術をもっと深く知る",
+    data: "⚽ サッカーのデータをもっと詳しく",
+    rule: "⚽ 判定やルールをもっと詳しく",
   },
   /* 枠の下に出る注記（ステマ規制対応。文言の変更は可、削除は不可） */
   disclosure: "※ アフィリエイト広告（PR）を含みます。リンク先での申込・購入により当サイトに報酬が支払われることがあります。",
@@ -85,6 +92,7 @@ window.PD_AFF = {
       enabled: true, kind: "card",
       badge: "楽天市場",
       title: "サッカー戦術の本",
+      contextPriority: 10,
       desc: "ハーフスペースやポジショナルプレーをもっと深く。戦術・分析の書籍を楽天で探せます。",
       btn: "戦術本を探す",
       url: pdRakutenSearch("サッカー 戦術 本"),
@@ -95,6 +103,7 @@ window.PD_AFF = {
       enabled: true, kind: "card",
       badge: "楽天市場",
       title: "サッカーのデータ分析本",
+      contextPriority: 10,
       desc: "xG・PPDAなどのスタッツをもっと知りたい人へ。データ分析の書籍を楽天で探せます。",
       btn: "データ分析本を探す",
       url: pdRakutenSearch("サッカー データ 分析 本"),
@@ -105,6 +114,7 @@ window.PD_AFF = {
       enabled: true, kind: "card",
       badge: "楽天市場",
       title: "サッカー競技規則の本",
+      contextPriority: 10,
       desc: "オフサイド・DOGSO・VARの判定基準を原典で。競技規則やレフェリングの本を楽天で探せます。",
       btn: "ルールの本を探す",
       url: pdRakutenSearch("サッカー 競技規則"),
@@ -165,7 +175,7 @@ window.PD_AFF = {
   var A = window.PD_AFF;
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
   function pick(slot, ctx) {
-    return A.items.filter(function (it) {
+    var eligible = A.items.filter(function (it) {
       if (!it.enabled) return false;
       if (it.kind === "card" && !it.url) return false;
       if (it.kind === "html" && !(it.html && it.html.trim())) return false;
@@ -177,7 +187,17 @@ window.PD_AFF = {
       if (slot !== "home" && it.cats && ctx.cat && it.cats.indexOf(ctx.cat) < 0) return false;
       if (slot !== "home" && it.terms && ctx.term && it.terms.indexOf(ctx.term) < 0) return false;
       return true;
-    }).slice(0, (A.max && A.max[slot]) || 3);
+    });
+    /* 絞り込み後、件数で切る前に優先度を適用する。
+       戦術モーダルは2枠なので、従来の固定順では戦術本が一度も掲載されなかった。
+       同順位は設定順を維持し、トップの並びと掲載件数は変えない。 */
+    if (slot !== "home") {
+      eligible = eligible.map(function (it, index) { return { item: it, index: index }; })
+        .sort(function (a, b) {
+          return (Number(b.item.contextPriority) || 0) - (Number(a.item.contextPriority) || 0) || a.index - b.index;
+        }).map(function (entry) { return entry.item; });
+    }
+    return eligible.slice(0, (A.max && A.max[slot]) || 3);
   }
   function cardHTML(it) {
     return '<a class="affcard" href="' + esc(it.url) + '" target="_blank" rel="nofollow sponsored noopener" referrerpolicy="no-referrer-when-downgrade">'
@@ -206,7 +226,8 @@ window.PD_AFF = {
       if (!items.length) { el.hidden = true; return; }
       var cards = items.filter(function (i) { return i.kind !== "html"; });
       var raws = items.filter(function (i) { return i.kind === "html"; });
-      var h = '<div class="affbox"><div class="afft"><span class="affpr">PR</span>' + esc((A.titles && A.titles[slot]) || "おすすめ") + "</div>";
+      var title = (slot !== "home" && A.contextTitles && A.contextTitles[ctx.cat]) || (A.titles && A.titles[slot]) || "おすすめ";
+      var h = '<div class="affbox"><div class="afft"><span class="affpr">PR</span>' + esc(title) + "</div>";
       if (cards.length) h += '<div class="affgrid">' + cards.map(cardHTML).join("") + "</div>";
       if (raws.length) h += '<div class="affraw"' + (cards.length ? ' style="margin-top:10px"' : "") + ">" + raws.map(function (i) { return "<div>" + i.html + "</div>"; }).join("") + "</div>";
       if (A.disclosure) h += '<p class="affnote">' + esc(A.disclosure) + "</p>";

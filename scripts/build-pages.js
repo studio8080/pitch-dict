@@ -99,6 +99,19 @@ const sharedDefs = between(src, "<!-- 共有グラデーション＆フィルタ
 const cspMeta = (src.match(/<meta http-equiv="Content-Security-Policy"[^>]*>/) || [""])[0];
 const gaId = (src.match(/gtag\/js\?id=([A-Z0-9-]+)/) || [])[1] || "";
 const adsClient = (src.match(/adsbygoogle\.js\?client=([a-z0-9-]+)/) || [])[1] || "";
+// AdSense: Pitch Dictionary - Term Content - Responsive (2026-10-11).
+// Manual placement is limited to term pages; domain-wide Auto ads stay disabled.
+const TERM_AD_SLOT = "7497202207";
+const TERM_AD_CSS = `.tdisplay{margin-top:26px;min-width:0;min-height:280px}
+.tdisplay-label{font-size:11px;color:var(--muted);margin-bottom:8px;text-align:center}
+.tdisplay:has(.adsbygoogle[data-ad-status="unfilled"]){display:none}`;
+function termAd(lang) {
+  return adsClient ? `<section class="tdisplay" aria-label="${lang === "ja" ? "広告" : "Advertisement"}">
+      <p class="tdisplay-label">${lang === "ja" ? "広告" : "Advertisement"}</p>
+      <ins class="adsbygoogle" style="display:block" data-ad-client="${adsClient}" data-ad-slot="${TERM_AD_SLOT}" data-ad-format="auto" data-full-width-responsive="true"></ins>
+      <script>try{(window.adsbygoogle=window.adsbygoogle||[]).push({});}catch(_){}</script>
+    </section>` : "";
+}
 
 /* ---------- 3) ユーティリティ ---------- */
 const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -452,6 +465,7 @@ function termPage(t, lang) {
       <a href="${termPath(prev.id, lang)}" rel="prev">← ${esc(shortOf(prev, lang))}</a>
       <a href="${termPath(next.id, lang)}" rel="next">${esc(shortOf(next, lang))} →</a>
     </nav>
+    ${termAd(lang)}
   </article>
 
   <aside class="taside">
@@ -716,6 +730,7 @@ ol.seocats li{list-style:none}
 .seolinks a{font-size:12.5px;font-weight:700;color:#0E6EAF;text-decoration:none;background:#F1F6FF;border:1px solid rgba(30,150,224,.28);border-radius:999px;padding:4px 11px}
 .seolinks a:hover{background:#E2EEFF}
 /* affiliate slot（affiliates.js が描画） */
+${TERM_AD_CSS}
 .affslot{margin-top:26px}
 .affbox{border:2px dashed rgba(20,40,90,.18);border-radius:16px;padding:14px 16px 16px;background:#FBFCFF;position:relative}
 .affbox .afft{display:flex;align-items:center;gap:8px;font-family:var(--round);font-weight:900;font-size:15px;color:#12203C;margin-bottom:10px}
@@ -758,6 +773,25 @@ function writePage(relDir, html) {
 }
 
 // Top-page metadata edits do not change term content or its modification dates.
+// A placement-only update keeps the existing content, dates, URLs and CSS intact.
+if (process.argv.includes("--ad-placements-only")) {
+  for (const lang of ["ja", "en"]) for (const t of TERMS) {
+    const file = path.join(ROOT, lang === "ja" ? "terms" : "en/terms", t.id, "index.html");
+    const previous = fs.readFileSync(file, "utf8").replace(/\r\n/g, "\n");
+    const withoutAd = previous.replace(/\n    <section class="tdisplay"[\s\S]*?<\/section>/g, "");
+    if (withoutAd.split("\n  </article>").length !== 2) throw new Error("用語ページの本文を特定できません: " + file);
+    const updated = withoutAd.replace("\n  </article>", "\n    " + termAd(lang) + "\n  </article>");
+    fs.writeFileSync(file, updated);
+  }
+  const cssFile = path.join(ROOT, "terms.css");
+  const previousCss = fs.readFileSync(cssFile, "utf8").replace(/\r\n/g, "\n");
+  const withoutAdCss = previousCss.replace(/^\.tdisplay[^\n]*\n?/gm, "");
+  if (!withoutAdCss.includes(".affslot{")) throw new Error("広告用CSSの挿入位置がありません");
+  fs.writeFileSync(cssFile, withoutAdCss.replace(".affslot{", TERM_AD_CSS + "\n.affslot{"));
+  console.log(`✅ 日英${TERMS.length * 2}用語ページの広告枠とCSSのみを更新しました（本文・日付は保持）。`);
+  process.exit(0);
+}
+
 // Keep the existing stylesheet version when regenerating only the English landing page.
 if (process.argv.includes("--english-home-only")) {
   const file = path.join(ROOT, "en", "index.html");

@@ -79,6 +79,7 @@ HTMLの再生成は不要。`enabled:false` の項目や未入力の項目は自
 掲載順・言語・カテゴリの制限と既存計測画像の検証: `node --test scripts/test-affiliates.cjs`。
 
 - 広告リンクには自動で `rel="nofollow sponsored noopener"` と「PR」表記が付く（景品表示法のステマ規制対応）
+- 広告カードは、DNT / GPC が無効な場合だけ、画面内50%以上・連続1秒の表示を `affiliate_view`、クリックを `affiliate_click` としてGA4へ送る。送信値は `provider`・`advertiser_id`・`placement`・`action` の固定ラベルだけで、リンクURL・検索語・用語IDは送らない
 - 外部ドメインの画像を使う広告は、`index.html` の CSP（`img-src`）にドメインの追加が必要な場合がある
 - `<script>` を含む広告素材（A8のウィジェット等）はCSPで動かない。script不要の素材を選ぶこと
 - **`langs` を省略した項目は日本語ページにしか出ない。** 英語ページ(`/en/`)は世界中から読まれるので、

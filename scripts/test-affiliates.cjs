@@ -13,6 +13,7 @@ function fixture(slot, cat = '', lang = 'ja', term = '') {
     hidden: true, innerHTML: '',
     getAttribute(name) { return attrs[name] || null; },
     setAttribute(name, value) { attrs[name] = value; },
+    querySelectorAll() { return []; },
   };
   const document = { readyState: 'loading', addEventListener() {}, querySelectorAll() { return [node]; } };
   const window = {};
@@ -105,3 +106,70 @@ test('repeated rendering does not duplicate cards or pixels', () => {
   assert.equal(f.node.innerHTML, before);
   assert.equal(f.node.getAttribute('data-aff-done'), '1');
 });
+
+function measurementFixture({ dnt = '0', globalPrivacyControl = false } = {}) {
+  const attrs = {
+    'data-aff': 'modal', 'data-cat': 'column', 'data-lang': 'ja', 'data-term': 'halfspace',
+  };
+  const linkAttrs = {
+    'data-aff-provider': 'moshimo',
+    'data-aff-advertiser': 'rakuten_tactics_books',
+    'data-aff-placement': 'modal_column',
+  };
+  const handlers = {};
+  const link = {
+    getAttribute(name) { return linkAttrs[name] || null; },
+    setAttribute(name, value) { linkAttrs[name] = value; },
+    addEventListener(name, handler) { handlers[name] = handler; },
+  };
+  const node = {
+    hidden: true, innerHTML: '',
+    getAttribute(name) { return attrs[name] || null; },
+    setAttribute(name, value) { attrs[name] = value; },
+    querySelectorAll(selector) { return selector === '.affcard[data-aff-advertiser]' ? [link] : []; },
+  };
+  const document = { readyState: 'loading', addEventListener() {}, querySelectorAll() { return [node]; } };
+  const calls = [];
+  let observerCallback;
+  let timerCallback;
+  class FakeIntersectionObserver {
+    constructor(callback, options) { observerCallback = callback; this.options = options; }
+    observe() {}
+    unobserve() {}
+  }
+  const window = { gtag(...args) { calls.push(args); } };
+  const navigator = { doNotTrack: dnt, globalPrivacyControl };
+  vm.runInNewContext(source, {
+    window, document, navigator,
+    IntersectionObserver: FakeIntersectionObserver,
+    WeakMap, WeakSet,
+    setTimeout(callback) { timerCallback = callback; return 1; },
+    clearTimeout() { timerCallback = null; },
+  });
+  window.PD_AFF_render(document);
+  return {
+    calls, handlers, link,
+    enter() { observerCallback([{ target: link, isIntersecting: true, intersectionRatio: 0.5 }]); timerCallback(); },
+  };
+}
+
+test('affiliate click and one-second 50% view use fixed privacy-safe dimensions', () => {
+  const f = measurementFixture();
+  f.enter();
+  f.handlers.click();
+  assert.deepEqual(JSON.parse(JSON.stringify(f.calls)), [
+    ['event', 'affiliate_view', { provider: 'moshimo', advertiser_id: 'rakuten_tactics_books', placement: 'modal_column', action: 'view' }],
+    ['event', 'affiliate_click', { provider: 'moshimo', advertiser_id: 'rakuten_tactics_books', placement: 'modal_column', action: 'click' }],
+  ]);
+  const payload = JSON.stringify(f.calls);
+  assert.equal(payload.includes('http'), false);
+  assert.equal(payload.includes('halfspace'), false);
+});
+
+for (const privacy of [{ dnt: '1' }, { globalPrivacyControl: true }]) {
+  test(`affiliate measurement stays off for ${privacy.dnt ? 'DNT' : 'GPC'}`, () => {
+    const f = measurementFixture(privacy);
+    assert.equal(f.handlers.click, undefined);
+    assert.deepEqual(f.calls, []);
+  });
+}

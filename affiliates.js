@@ -70,6 +70,7 @@ window.PD_AFF = {
     /* ---------- もしもアフィリエイト（提携済み） ---------- */
     {
       enabled: true, kind: "card",
+      provider: "moshimo", advertiserId: "wowow",
       badge: "UEFAチャンピオンズリーグ",
       title: "WOWOW（ワウワウ）",
       desc: "チャンピオンズリーグやヨーロッパリーグを配信。実況で飛び交う戦術用語を、その場の映像で確かめられる。",
@@ -80,6 +81,7 @@ window.PD_AFF = {
     },
     {
       enabled: true, kind: "card",
+      provider: "moshimo", advertiserId: "skyperfectv",
       badge: "海外サッカー・代表戦",
       title: "スカパー！",
       desc: "海外サッカーや日本代表戦を放送。試合を観ながら用語の意味を確かめたい人へ。",
@@ -90,6 +92,7 @@ window.PD_AFF = {
     },
     {
       enabled: true, kind: "card",
+      provider: "moshimo", advertiserId: "rakuten_tactics_books",
       badge: "楽天市場",
       title: "サッカー戦術の本",
       contextPriority: 10,
@@ -101,6 +104,7 @@ window.PD_AFF = {
     },
     {
       enabled: true, kind: "card",
+      provider: "moshimo", advertiserId: "rakuten_data_books",
       badge: "楽天市場",
       title: "サッカーのデータ分析本",
       contextPriority: 10,
@@ -112,6 +116,7 @@ window.PD_AFF = {
     },
     {
       enabled: true, kind: "card",
+      provider: "moshimo", advertiserId: "rakuten_rules_books",
       badge: "楽天市場",
       title: "サッカー競技規則の本",
       contextPriority: 10,
@@ -123,6 +128,7 @@ window.PD_AFF = {
     },
     {
       enabled: true, kind: "card",
+      provider: "moshimo", advertiserId: "rakuten_fan_goods",
       badge: "楽天市場",
       title: "観戦グッズ・サッカーボール",
       desc: "スタジアム観戦のおともに。マフラータオル、ユニフォーム、ボールなど。",
@@ -137,6 +143,7 @@ window.PD_AFF = {
        リンクを取り直すときは、必ず掲載サイトにこれを選ぶこと。 */
     {
       enabled: true, kind: "card",
+      provider: "a8", advertiserId: "abema_premium",
       badge: "日本代表戦・海外サッカー",
       title: "ABEMAプレミアム",
       desc: "サッカー中継やオリジナル番組が見放題。試合を観ながら用語の意味を確かめたい人へ。",
@@ -147,6 +154,7 @@ window.PD_AFF = {
     },
     {
       enabled: true, kind: "card",
+      provider: "a8", advertiserId: "xebio",
       badge: "スーパースポーツゼビオ",
       title: "サッカー用品・スパイク",
       desc: "スパイク、ボール、ウェアまで。自分でプレーする人にも、観戦グッズを探す人にも。",
@@ -199,8 +207,14 @@ window.PD_AFF = {
     }
     return eligible.slice(0, (A.max && A.max[slot]) || 3);
   }
-  function cardHTML(it) {
-    return '<a class="affcard" href="' + esc(it.url) + '" target="_blank" rel="nofollow sponsored noopener" referrerpolicy="no-referrer-when-downgrade">'
+  function placement(slot, ctx) {
+    return slot + (ctx.cat ? "_" + ctx.cat : "_general");
+  }
+  function cardHTML(it, slot, ctx) {
+    return '<a class="affcard" href="' + esc(it.url) + '" target="_blank" rel="nofollow sponsored noopener" referrerpolicy="no-referrer-when-downgrade"'
+      + ' data-aff-provider="' + esc(it.provider || "unknown") + '"'
+      + ' data-aff-advertiser="' + esc(it.advertiserId || "unknown") + '"'
+      + ' data-aff-placement="' + esc(placement(slot, ctx)) + '">'
       + (it.badge ? '<span class="affbadge">' + esc(it.badge) + "</span>" : "")
       + "<b>" + esc(it.title) + "</b>"
       + (it.desc ? "<p>" + esc(it.desc) + "</p>" : "")
@@ -211,6 +225,58 @@ window.PD_AFF = {
        loading="lazy" を付けてはいけない：この画像は0x0の隠しコンテナに入るため、
        遅延読み込みだとビューポートに入らず永久に読み込まれず、表示回数が計上されない。 */
     return it.imp ? '<img src="' + esc(it.imp) + '" width="1" height="1" alt="" style="border:none">' : "";
+  }
+  function analyticsAllowed() {
+    var nav = typeof navigator !== "undefined" ? navigator : {};
+    var dnt = nav.doNotTrack || (typeof window !== "undefined" && window.doNotTrack) || nav.msDoNotTrack;
+    return dnt !== "1" && dnt !== "yes" && nav.globalPrivacyControl !== true
+      && typeof window.gtag === "function";
+  }
+  function eventParams(link, action) {
+    return {
+      provider: link.getAttribute("data-aff-provider") || "unknown",
+      advertiser_id: link.getAttribute("data-aff-advertiser") || "unknown",
+      placement: link.getAttribute("data-aff-placement") || "unknown",
+      action: action,
+    };
+  }
+  function sendAffiliateEvent(name, link, action) {
+    if (!analyticsAllowed()) return;
+    try { window.gtag("event", name, eventParams(link, action)); } catch (_) {}
+  }
+  function bindMeasurement(root) {
+    if (!root || typeof root.querySelectorAll !== "function" || !analyticsAllowed()) return;
+    var links = root.querySelectorAll(".affcard[data-aff-advertiser]");
+    Array.prototype.forEach.call(links, function (link) {
+      if (link.getAttribute("data-aff-measured")) return;
+      link.setAttribute("data-aff-measured", "1");
+      link.addEventListener("click", function () {
+        sendAffiliateEvent("affiliate_click", link, "click");
+      }, { passive: true });
+    });
+    if (typeof IntersectionObserver !== "function") return;
+    var timers = typeof WeakMap === "function" ? new WeakMap() : null;
+    var seen = typeof WeakSet === "function" ? new WeakSet() : null;
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        var link = entry.target;
+        if (seen && seen.has(link)) return;
+        if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+          if (timers && timers.has(link)) return;
+          var timer = setTimeout(function () {
+            if (seen) seen.add(link);
+            if (timers) timers.delete(link);
+            observer.unobserve(link);
+            sendAffiliateEvent("affiliate_view", link, "view");
+          }, 1000);
+          if (timers) timers.set(link, timer);
+        } else if (timers && timers.has(link)) {
+          clearTimeout(timers.get(link));
+          timers.delete(link);
+        }
+      });
+    }, { threshold: [0, 0.5] });
+    Array.prototype.forEach.call(links, function (link) { observer.observe(link); });
   }
   function render(root) {
     var nodes = (root || document).querySelectorAll("[data-aff]");
@@ -228,7 +294,7 @@ window.PD_AFF = {
       var raws = items.filter(function (i) { return i.kind === "html"; });
       var title = (slot !== "home" && A.contextTitles && A.contextTitles[ctx.cat]) || (A.titles && A.titles[slot]) || "おすすめ";
       var h = '<div class="affbox"><div class="afft"><span class="affpr">PR</span>' + esc(title) + "</div>";
-      if (cards.length) h += '<div class="affgrid">' + cards.map(cardHTML).join("") + "</div>";
+      if (cards.length) h += '<div class="affgrid">' + cards.map(function (it) { return cardHTML(it, slot, ctx); }).join("") + "</div>";
       if (raws.length) h += '<div class="affraw"' + (cards.length ? ' style="margin-top:10px"' : "") + ">" + raws.map(function (i) { return "<div>" + i.html + "</div>"; }).join("") + "</div>";
       if (A.disclosure) h += '<p class="affnote">' + esc(A.disclosure) + "</p>";
       /* インプレッション計測用の1x1画像は枠の外（見えない位置）にまとめる */
@@ -237,6 +303,7 @@ window.PD_AFF = {
       el.innerHTML = h;
       el.hidden = false;
       el.setAttribute("data-aff-done", "1");
+      bindMeasurement(el);
     });
   }
   window.PD_AFF_render = render;

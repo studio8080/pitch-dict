@@ -1417,12 +1417,12 @@ const VIZ_TXT={
  "負け":"Loss",
  "リーグ順位はこの合計（勝ち点）で決まる":"League position is decided by this total (points)",
  "だから終盤の「引き分け狙い」や「勝ち点計算」という言葉が生まれる":"Hence late-season ‘playing for a draw’ and ‘points maths’",
- "90分のうち、ボールが動いていた時間は？":"Of the 90 minutes, how long was the ball in play?",
+ "計算例：試合全体100分のうち、実際にプレーした時間":"Example: time in play during 100 elapsed minutes",
  "試合時間":"Match time",
- "90分＋AT":"90 min + AT",
- "実質 55分前後":"Really about 55 min",
- "スローインやファウルで止まっている時間を除いた「実プレー時間」":"The ‘actual playing time’ minus throw-ins, fouls, etc.",
- "APTが長い試合＝ノンストップの好ゲーム。リーグも公式に計測中":"Long APT = a non-stop, good game; officially measured by leagues",
+ "100分（例）":"100 min (example)",
+ "実プレー60分（例）":"60 min in play",
+ "100分 − 中断40分 ＝ APT 60分（説明用の例）":"100 min elapsed − 40 min of stoppages = 60 min APT",
+ "APTは実プレー時間。各ハーフの最後に加える時間とは別":"APT is time in play, not the time added at the end of each half",
  "こぼれ球が吸い込まれていく…":"Loose balls get sucked in…",
  "中盤のルーズボールを異常な確率で回収する現象。由来は佐野海舟":"Hoovering up midfield loose balls at an absurd rate — from Kaishu Sano",
  "出":"Pass",
@@ -2391,13 +2391,13 @@ VIZ.points=()=>`<svg viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
   </g></svg>`;
 
 VIZ.apt=()=>`<svg viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
-  ${Txt(300,45,"90分のうち、ボールが動いていた時間は？",{size:14,col:"#FFE9A8"})}
+  ${Txt(300,45,"計算例：試合全体100分のうち、実際にプレーした時間",{size:14,col:"#FFE9A8"})}
   <rect x="100" y="80" width="400" height="34" rx="8" fill="#22314F"/>
-  ${Txt(90,103,"試合時間",{anchor:"end",size:12.5})}${Txt(510,103,"90分＋AT",{anchor:"start",size:12.5,col:"#8FA0B8"})}
+  ${Txt(90,103,"試合時間",{anchor:"end",size:12.5})}${Txt(490,103,"100分（例）",{anchor:"end",size:12.5,col:"#8FA0B8"})}
   <rect x="100" y="140" width="240" height="34" rx="8" fill="#4FC3F7"/>
-  ${Txt(90,163,"APT",{anchor:"end",size:12.5})}${Txt(350,163,"実質 55分前後",{anchor:"start",size:12.5,col:"#BDE9FF"})}
-  ${Txt(300,230,"スローインやファウルで止まっている時間を除いた「実プレー時間」",{size:12.5})}
-  ${Txt(300,265,"APTが長い試合＝ノンストップの好ゲーム。リーグも公式に計測中",{size:12,col:"#8FA0B8"})}
+  ${Txt(90,163,"APT",{anchor:"end",size:12.5})}${Txt(350,163,"実プレー60分（例）",{anchor:"start",size:12.5,col:"#BDE9FF"})}
+  ${Txt(300,230,"100分 − 中断40分 ＝ APT 60分（説明用の例）",{size:12.5})}
+  ${Txt(300,265,"APTは実プレー時間。各ハーフの最後に加える時間とは別",{size:12,col:"#8FA0B8"})}
 </svg>`;
 
 VIZ.addtime=()=>`<svg viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
@@ -3189,10 +3189,10 @@ const TERMS=[
  use:{who:"解説ではこう聞こえる",text:"「この時間帯なら無理せず勝ち点1でもOK、という判断もありますね」"},
  viz:"points",rel:["derby","giantkill"]},
 {id:"apt",name:"APT（アクチュアルプレーイングタイム）",kana:"えーぴーてぃー",en:"Actual Playing Time",cat:"data",lvl:3,
- one:"90分のうち、実際にボールが動いていた正味のプレー時間。",
- catch:"「90分試合の中身は、実は“55分”くらいしかない」",
- why:"スローイン、ファウル、治療などで止まっている時間を除くと、実プレー時間は平均50〜60分程度。<b>APTが長い試合＝ノンストップの好ゲーム</b>の指標として、Jリーグも公式に計測・公開しています。時間稼ぎの多い試合はAPTに正直に表れます。",
- use:{who:"記事ではこう出る",text:"「この試合のAPTは62分30秒。今季リーグ最長の、途切れない好ゲームだった」"},
+ one:"Actual Playing Timeの略で、サッカーの試合中にボールがインプレーだった時間の合計。",
+ catch:"「試合の時計ではなく、プレーが続いていた時間を見る」",
+ why:"スローインやファウルの後、プレー再開を待つ時間などを除いて数えます。<b>APTは実際にプレーした時間、アディショナルタイムは各ハーフの最後に追加する時間</b>で、別のものです。例えば、試合開始から終了まで100分、プレーが止まっていた時間が40分なら、APTは60分（説明用の例）。APTだけで試合の面白さやチームの強さは決まりません。定義は<a href=\"https://aboutj.jleague.jp/corporate/terminology/\" target=\"_blank\" rel=\"noopener noreferrer\">Jリーグ公式用語集</a>でも確認できます。",
+ use:{who:"記事の表現例",text:"「この試合のAPTは60分。試合全体のうち、実際にプレーしていた時間を示している」"},
  viz:"apt",rel:["addtime","poss","malicia"]},
 
 /* ---------- 第4弾 ---------- */
@@ -3623,7 +3623,7 @@ const TR_EN={
  hattrick:{one:"One player scoring three goals in a single match.",catch:"“Three in one game — the special day you get to keep the match ball.”",why:"From the cricket custom of giving a hat to a bowler who took three wickets in a row. The scorer <b>taking the match ball home as a memento</b> is a football tradition. They come in all shapes and sizes, but it's always the scorer's day.",who:"On the call you'll hear",text:"“Goal number three! A hat-trick! It's his day!”"},
  cleansheet:{one:"Finishing a match without conceding. A medal for the GK and defence.",catch:"“Keeping the ‘sheet’ clean = a shutout. The defence's hat-trick.”",why:"It dates from when match records were kept on paper (a sheet) and the goals-against column stayed blank. <b>The defensive equivalent of attackers' G/A</b>, an easy-to-grasp metric. As in “15 clean sheets this season.”",who:"Articles put it",text:"“The keeper recorded a league-high 18 clean sheets and won the Golden Glove.”"},
  points:{one:"Win = 3, draw = 1, loss = 0 — the points that decide league standings.",catch:"“The league's ‘currency’ — 3 for a win, 1 for a draw, nothing for a defeat.”",why:"Standings, survival and the title are all decided by this total. “Grabbing a point,” “a six-pointer” — <b>late-season articles are full of points maths</b>. Wins used to be worth 2; it became 3 to encourage attacking football.",who:"Analysts say",text:"“At this stage, taking a point without over-committing is a valid call too.”"},
- apt:{one:"The net time the ball was actually in play out of the 90 minutes.",catch:"“A 90-minute match actually has only about ‘55 minutes’ of actual play.”",why:"Strip out throw-ins, fouls and treatment and real playing time averages 50–60 minutes. <b>High APT = a free-flowing, quality game</b> — Japan's J.League officially measures and publishes it. Time-wasting shows up plainly in the APT.",who:"Articles put it",text:"“This match's APT was 62:30 — the league's longest this season, an uninterrupted classic.”"},
+ apt:{one:"APT stands for Actual Playing Time: the total time the ball is in play during a football match.",catch:"“Measure the time in play, rather than the running match clock.”",why:"Exclude stoppages such as the wait to restart after the ball goes out or a foul. <b>APT measures time in play; additional time is the time added at the end of each half.</b> For example, 100 elapsed minutes minus 40 minutes of stoppages gives 60 minutes of APT (an illustrative example). APT alone does not determine match quality or team strength. See the <a href=\"https://aboutj.jleague.jp/corporate/terminology/\" target=\"_blank\" rel=\"noopener noreferrer\">J.League's official glossary (Japanese)</a> for the definition.",who:"An example in a match report",text:"“The match's APT was 60 minutes — the time actually spent playing.”"},
  sanokaishu:{one:"Hoovering up loose balls in midfield at an absurd rate. Named after Kaishu Sano.",catch:"“Loose balls all somehow end up at that one man's feet.”",why:"A fan-coined meme from Japan midfielder Kaishu Sano's knack of predicting where second balls drop and getting there first. <b>‘Recovery’ is now a talent and a stat</b> — actually measured as ball recoveries. A new yardstick for midfielders.",who:"On social media",text:"“The Sano recoveries are flowing again today — it's like having a vacuum cleaner in midfield.”"},
  dashiukete:{one:"The passer and the receiver. A pass is always a joint effort by two.",catch:"“A misplaced pass isn't one person's fault — it's about the pair's ‘timing.’”",why:"A good pass is <b>the passer's technique × the receiver's movement × timing</b>. Break it down — “the passer was early,” “the receiver wasn't ready” — and even a single misplaced pass comes into sharper focus. A basic analytical framework pundits lean on.",who:"Analysts say",text:"“Wonderful movement from the receiver there — and the passer didn't miss it.”"},
  gameclose:{one:"Ending the match with the lead intact. The specialist is the ‘closer.’",catch:"“The skill of ‘closing up shop’ on a game you're winning.”",why:"Attacking isn't the only strength. Defensive subs, keeping the ball by the corner flag, using fouls — <b>‘seeing it out’ is its own skill</b>. Defensive players brought on late are called ‘closers,’ borrowing from baseball.",who:"Analysts say",text:"“Now it's about closing the game out — and he's been brought on to do exactly that, a closer's job.”"},
@@ -3670,7 +3670,7 @@ function openModal(id){
        <div class="catch">${catchTxt}</div>
      </div>
      <div class="step">
-       <span class="slabel"><span class="snum">2</span>${L.m2}</span>
+       <span class="slabel"><span class="snum">2</span>${t.id==="apt"?(en?"📊 An illustrated calculation":"📊 計算例を図で見る"):L.m2}</span>
        <div class="viz" id="vizbox">${trViz(VIZ[t.viz]())}<button class="vizzoombtn" type="button" onclick="openVizZoom(event)" aria-label="${L.vzoomBtn}">🔍 ${L.zoom}</button></div>
      </div>
      <div class="step">

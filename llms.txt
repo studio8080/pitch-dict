@@ -110,7 +110,7 @@
 - [Hat-trick](https://pitch.kokokikaku.com/en/terms/hattrick/): One player scoring three goals in a single match.
 - [Clean Sheet](https://pitch.kokokikaku.com/en/terms/cleansheet/): Finishing a match without conceding. A medal for the GK and defence.
 - [Points](https://pitch.kokokikaku.com/en/terms/points/): Win = 3, draw = 1, loss = 0 — the points that decide league standings.
-- [Actual Playing Time](https://pitch.kokokikaku.com/en/terms/apt/): The net time the ball was actually in play out of the 90 minutes.
+- [Actual Playing Time](https://pitch.kokokikaku.com/en/terms/apt/): APT stands for Actual Playing Time: the total time the ball is in play during a football match.
 - [Sano Recovery](https://pitch.kokokikaku.com/en/terms/sanokaishu/): Hoovering up loose balls in midfield at an absurd rate. Named after Kaishu Sano.
 - [Passer & Receiver](https://pitch.kokokikaku.com/en/terms/dashiukete/): The passer and the receiver. A pass is always a joint effort by two.
 - [Closing the Game](https://pitch.kokokikaku.com/en/terms/gameclose/): Ending the match with the lead intact. The specialist is the ‘closer.’
@@ -231,7 +231,7 @@
 - [ハットトリック](https://pitch.kokokikaku.com/terms/hattrick/): 1試合で1人の選手が3得点を挙げること。
 - [クリーンシート](https://pitch.kokokikaku.com/terms/cleansheet/): 無失点で試合を終えること。GKとDF陣の勲章。
 - [勝ち点](https://pitch.kokokikaku.com/terms/points/): 勝ち＝3、引き分け＝1、負け＝0。リーグ順位を決めるポイント。
-- [APT](https://pitch.kokokikaku.com/terms/apt/): 90分のうち、実際にボールが動いていた正味のプレー時間。
+- [APT](https://pitch.kokokikaku.com/terms/apt/): Actual Playing Timeの略で、サッカーの試合中にボールがインプレーだった時間の合計。
 - [佐野回収](https://pitch.kokokikaku.com/terms/sanokaishu/): 中盤のこぼれ球を異常な確率で拾いまくる現象。由来は佐野海舟。
 - [出し手と受け手](https://pitch.kokokikaku.com/terms/dashiukete/): パスを出す選手と受ける選手。パスは常に2人の共同作業。
 - [ゲームをクローズする](https://pitch.kokokikaku.com/terms/gameclose/): リードを守ったまま試合を終わらせること。その専門家がクローザー。

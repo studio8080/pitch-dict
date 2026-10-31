@@ -323,6 +323,10 @@ function termPage(t, lang) {
 
   // Search-intent refinements for existing pages; keep the visual glossary identity.
   const searchCopy = lang === "en" ? {
+    apt: {
+      title: 'Actual Playing Time (APT) in football: meaning & calculation | PITCH DICTIONARY',
+      desc: 'APT is the total time the ball is in play during a football match. See an illustrated calculation and how actual playing time differs from added time.'
+    },
     cutback: {
       title: 'Cutback in football: meaning & animated example | PITCH DICTIONARY',
       desc: 'A cutback is a pass pulled back from near the goal line to a teammate farther from goal. See the movement and why it creates chances on an animated board.'
@@ -343,6 +347,10 @@ function termPage(t, lang) {
       desc: 'Volante is Portuguese for "steering wheel": a defensive midfielder at the base of midfield who steers attack and defence. See the position on an animated board.'
     }
   }[t.id] : {
+    apt: {
+      title: 'サッカーのAPTとは？意味・計算例とアディショナルタイムとの違い｜ピッチの辞書',
+      desc: 'APTはActual Playing Timeの略で、サッカーでボールがインプレーだった時間の合計です。アディショナルタイムとの違いと、100分から中断40分を除く計算例を、動く図解で解説します。'
+    },
     // 2026-09-25 時点（28日間）: 94表示・平均31.5位。「ボランチ 英語」「ボランチ ポルトガル語」「ボランチ ハンドル」で探されている。
     volante: {
       title: 'ボランチとは？意味と語源（ポルトガル語でハンドル）・英語での呼び方｜ピッチの辞書',
@@ -433,9 +441,9 @@ function termPage(t, lang) {
     </section>
 
     <section class="tstep">
-      <h2><span class="snum">2</span>${esc(I18N[lang].m2)}</h2>
+      <h2><span class="snum">2</span>${esc(t.id === "apt" ? (lang === "ja" ? "📊 計算例を図で見る" : "📊 An illustrated calculation") : I18N[lang].m2)}</h2>
       <div class="viz">${svg}</div>
-      <p class="vizcap">${esc(u.vizCap)}</p>
+      <p class="vizcap">${esc(t.id === "apt" ? (lang === "ja" ? "計算例：100分 − 中断40分 ＝ APT60分。各ハーフの最後に追加する時間とは別です。実際の試合成績ではありません。" : "Example: 100 elapsed minutes − 40 minutes of stoppages = 60 minutes APT. This is time in play, not added time. These are illustrative figures, not match statistics.") : u.vizCap)}</p>
       <p class="tapp"><a class="tbtn" href="${lang === "ja" ? "/#" + t.id : "/?lang=en#" + t.id}">${esc(u.appBtn(TERMS.length - 1))}</a></p>
     </section>
 

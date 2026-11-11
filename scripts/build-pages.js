@@ -69,7 +69,7 @@ const ctx = vm.createContext({
   encodeURIComponent, decodeURIComponent, URLSearchParams,
 });
 vm.runInContext(mainJs, ctx, { filename: "index.html(main)" });
-const D = vm.runInContext("({TERMS,CAT,EMOJI,TR_EN,I18N,TREND,VIZ,trViz})", ctx);
+const D = vm.runInContext("({TERMS,CAT,EMOJI,TR_EN,I18N,TREND,VIZ,trViz,shortTermName})", ctx);
 const { TERMS, CAT, EMOJI, TR_EN, I18N, TREND, VIZ, trViz } = D;
 if (!TERMS || !TERMS.length) throw new Error("TERMS が空です");
 const missingEn = TERMS.filter((t) => !TR_EN[t.id] || !TR_EN[t.id].one || !TR_EN[t.id].why);
@@ -96,7 +96,8 @@ const vizCss = between(src, ".viz{", ".viz svg{width:100%;height:auto;display:bl
 const animCss = between(src, "/* ---------- SVG anim ---------- */", "@media (prefers-reduced-motion: reduce){", false)
   + "@media (prefers-reduced-motion: reduce){.mv,.mv2,.pulse,.dash,.fadein,.blinkel{animation:none}}\n@keyframes blink{50%{opacity:.25}}\n";
 const sharedDefs = between(src, "<!-- 共有グラデーション＆フィルター定義 -->", "</defs></svg>");
-const cspMeta = (src.match(/<meta http-equiv="Content-Security-Policy"[^>]*>/) || [""])[0];
+// Static-page search submits only to this site's own interactive home.
+const cspMeta = (src.match(/<meta http-equiv="Content-Security-Policy"[^>]*>/) || [""])[0].replace("form-action 'none'", "form-action 'self'");
 const gaId = (src.match(/gtag\/js\?id=([A-Z0-9-]+)/) || [])[1] || "";
 const adsClient = (src.match(/adsbygoogle\.js\?client=([a-z0-9-]+)/) || [])[1] || "";
 // AdSense: Pitch Dictionary - Term Content - Responsive (2026-10-11).
@@ -138,7 +139,7 @@ const CATS = ["live", "column", "data", "rule"];
 const byCat = Object.fromEntries(CATS.map((c) => [c, TERMS.filter((t) => t.cat === c)]));
 
 /* 言語ごとの表記ゆれを1か所にまとめる */
-const shortJa = (t) => t.name.split("（")[0].split("／")[0];
+const shortJa = (t) => D.shortTermName(t);
 // 英語名の「/」より前だけを取ると語が欠けるもの。"Near / Far Post" が "Near" になり、
 // タイトルが "What is Near in football?" になっていた（2026-09 時点で英語ページ最多の表示）。
 const SHORT_EN = {
@@ -172,6 +173,21 @@ const abs = (p) => SITE + p;
 const today = new Date().toISOString().slice(0, 10);
 let lastmod = today;
 try { lastmod = execSync("git log -1 --format=%cs -- index.html", { cwd: ROOT }).toString().trim() || today; } catch (_) {}
+
+// UI/search fixes do not revise every term's explanation. Preserve its known content date.
+const CONTENT_UPDATED = { "terms/arrow": "2026-11-11", "terms/wallpass": "2026-11-11" };
+const previousMeta = new Map();
+for (const rel of ["terms", "en", "en/terms", ...TERMS.flatMap(t=>["terms/"+t.id,"en/terms/"+t.id])]) {
+  const file=path.join(ROOT,rel,"index.html");
+  if(!fs.existsSync(file))continue;
+  const html=fs.readFileSync(file,"utf8");
+  previousMeta.set(rel,{modified:(html.match(/"dateModified":"(\d{4}-\d{2}-\d{2})"/)||[])[1],cssLink:(html.match(/<link rel="stylesheet" href="\/terms\.css\?v=[^"]+">/)||[])[0]});
+}
+const previousCss=fs.existsSync(path.join(ROOT,"terms.css"))?fs.readFileSync(path.join(ROOT,"terms.css"),"utf8").replace(/\r\n/g,"\n"):"";
+const termModified=(id,lang)=>{const rel=(lang==="ja"?"terms/":"en/terms/")+id;return CONTENT_UPDATED[rel]||previousMeta.get(rel)?.modified||lastmod;};
+const previousSitemap=fs.existsSync(path.join(ROOT,"sitemap.xml"))?fs.readFileSync(path.join(ROOT,"sitemap.xml"),"utf8"):"";
+const sitemapDates=new Map([...previousSitemap.matchAll(/<loc>([^<]+)<\/loc><lastmod>([^<]+)<\/lastmod>/g)].map(m=>[m[1],m[2]]));
+const pageDate=p=>(p==="/"||p==="/terms/")?"2026-11-11":sitemapDates.get(abs(p))||lastmod;
 
 /* ---------- 4) 共通ヘッダ / フッタ ---------- */
 const UI = {
@@ -260,7 +276,8 @@ ${adsClient ? `<!-- Google AdSense -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&family=Oswald:wght@600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/terms.css?v=${lastmod.replace(/-/g, "")}">
+<link rel="stylesheet" href="/terms.css?v=${today.replace(/-/g, "")}">
+<link rel="stylesheet" href="/polish.css?v=20261111">
 </head>
 <body>
 ${sharedDefs}
@@ -294,7 +311,7 @@ function foot(lang) {
     <p class="tfcopy">© 2026 ${esc(u.company)} / ${esc(u.brand)}</p>
   </div>
 </footer>
-<script src="/affiliates.js" defer></script>
+<script src="/affiliates.js?v=20261111" defer></script>
 <!-- koko-ask-chatgpt -->
 <script src="/ask-chatgpt.js?v=2" data-product="pitch" defer></script>
 </body>
@@ -347,6 +364,10 @@ function termPage(t, lang) {
       desc: 'Volante is Portuguese for "steering wheel": a defensive midfielder at the base of midfield who steers attack and defence. See the position on an animated board.'
     }
   }[t.id] : {
+    wallpass: {
+      title: 'サッカーのワンツーとは？壁パスの動きと使い方を図解｜ピッチの辞書',
+      desc: 'サッカーのワンツー（壁パス）は、味方へパスを出し、走りながらリターンを受ける2人の連係です。パスを出す→走る→返してもらう動きと、3人目の動きとの違いを、動く戦術ボードで解説します。'
+    },
     apt: {
       title: 'サッカーのAPTとは？意味・計算例とアディショナルタイムとの違い｜ピッチの辞書',
       desc: 'APTはActual Playing Timeの略で、サッカーでボールがインプレーだった時間の合計です。アディショナルタイムとの違いと、100分から中断40分を除く計算例を、動く図解で解説します。'
@@ -403,7 +424,7 @@ function termPage(t, lang) {
       "@context": "https://schema.org", "@type": "Article",
       headline: lang === "ja" ? `${sn}とは？意味を戦術ボードで図解` : `${whatIs(sn)} ${sn}? A football term, visualized`,
       description: desc, url, inLanguage: lang,
-      mainEntityOfPage: url, dateModified: lastmod, image: SITE + "/" + ogImage(lang),
+      mainEntityOfPage: url, dateModified: termModified(t.id,lang), image: SITE + "/" + ogImage(lang),
       author: { "@type": "Organization", name: UI[lang].company, url: "https://kokokikaku.com/" },
       publisher: { "@type": "Organization", name: UI[lang].company, url: "https://kokokikaku.com/", logo: { "@type": "ImageObject", url: SITE + "/icon-512.png" } },
       about: { "@type": "Thing", name: lang === "ja" ? "サッカー用語" : "Football terminology" },
@@ -437,7 +458,8 @@ function termPage(t, lang) {
 
     <section class="tstep">
       <h2><span class="snum">1</span>${esc(I18N[lang].m1)}</h2>
-      <p class="tcatch">${catchOf(t, lang)}</p>
+      <p class="tcatch">${catchOf(t, lang)}</p>${t.id === "wallpass" && lang === "ja" ? `
+      <h3>ワンツーと壁パスは同じ意味？</h3><p>同じ2人の連係を指します。パスを出した選手がすぐに前へ走り、味方からのリターンを受けます。ボールを受けるのが別の選手になる<a href="/terms/thirdman/">「3人目の動き」</a>とは区別します。</p>` : ""}
     </section>
 
     <section class="tstep">
@@ -775,6 +797,8 @@ ${animCss}`;
 
 /* ---------- 9) 書き出し ---------- */
 function writePage(relDir, html) {
+  const previous=previousMeta.get(relDir.replace(/\\/g,"/"));
+  if(previous?.cssLink&&previousCss===css)html=html.replace(/<link rel="stylesheet" href="\/terms\.css\?v=[^"]+">/,previous.cssLink);
   const dir = path.join(ROOT, relDir);
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, "index.html"), html);
@@ -812,8 +836,11 @@ if (process.argv.includes("--english-home-only")) {
   process.exit(0);
 }
 
-fs.rmSync(path.join(ROOT, "terms"), { recursive: true, force: true });
-fs.rmSync(path.join(ROOT, "en"), { recursive: true, force: true });
+for(const generated of ["terms","en"]){
+  const target=path.resolve(ROOT,generated);
+  if(path.dirname(target)!==path.resolve(ROOT))throw new Error("生成先がリポジトリ外です");
+  fs.rmSync(target,{recursive:true,force:true});
+}
 
 for (const lang of ["ja", "en"]) {
   for (const t of TERMS) writePage(path.join(lang === "ja" ? "terms" : "en/terms", t.id), termPage(t, lang));
@@ -839,20 +866,20 @@ fs.writeFileSync(path.join(ROOT, "terms.css"), css);
 }
 
 const urls = [
-  { loc: abs("/"), lastmod, changefreq: "weekly", priority: "1.0" },
-  { loc: abs("/en/"), lastmod, changefreq: "weekly", priority: "0.9" },
-  { loc: abs("/terms/"), lastmod, changefreq: "weekly", priority: "0.9" },
-  { loc: abs("/en/terms/"), lastmod, changefreq: "weekly", priority: "0.8" },
+  { loc: abs("/"), lastmod:pageDate("/"), changefreq: "weekly", priority: "1.0" },
+  { loc: abs("/en/"), lastmod:pageDate("/en/"), changefreq: "weekly", priority: "0.9" },
+  { loc: abs("/terms/"), lastmod:pageDate("/terms/"), changefreq: "weekly", priority: "0.9" },
+  { loc: abs("/en/terms/"), lastmod:pageDate("/en/terms/"), changefreq: "weekly", priority: "0.8" },
 ];
 for (const lang of ["ja", "en"]) {
   for (const t of TERMS) {
     urls.push({
-      loc: abs(termPath(t.id, lang)), lastmod, changefreq: "monthly",
+      loc: abs(termPath(t.id, lang)), lastmod:termModified(t.id,lang), changefreq: "monthly",
       priority: TREND.includes(t.id) ? (lang === "ja" ? "0.8" : "0.7") : (lang === "ja" ? "0.7" : "0.6"),
     });
   }
 }
-urls.push({ loc: abs("/privacy.html"), lastmod: today, changefreq: "yearly", priority: "0.2" });
+urls.push({ loc: abs("/privacy.html"), lastmod:pageDate("/privacy.html"), changefreq: "yearly", priority: "0.2" });
 
 fs.writeFileSync(path.join(ROOT, "sitemap.xml"),
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n` +

@@ -9,6 +9,8 @@
 |---|---|---|
 | `index.html` | 本体。用語データ(`TERMS`)・英訳(`TR_EN`)・戦術ボード(`VIZ`)・UIがすべて入った1ファイル | **手で編集する** |
 | `affiliates.js` | A8.net / もしもアフィリエイトの掲載設定 | **手で編集する** |
+| `polish.css` / `polish.js` | トップの検索・図解体験、全ページの広告カードの視覚改善 | 手で編集する |
+| `assets/affiliate-*-v01.webp` | 観戦・本・グッズのオリジナルのカテゴリ用イラスト。実商品の写真ではない | 原本を保持して書き出す |
 | `privacy.html` | プライバシーポリシー（広告・アフィリエイトの開示を含む） | **手で編集する** |
 | `404.html` | 404ページ | 手で編集する |
 | `terms/<id>/index.html` | 用語ページ 日本語118枚 | **生成物。直接編集しない** |
@@ -78,6 +80,9 @@ HTMLの再生成は不要。`enabled:false` の項目や未入力の項目は自
 トップの表示順と各枠の最大件数は変えない。カテゴリ別の見出しは `contextTitles` で設定する。
 掲載順・言語・カテゴリの制限と既存計測画像の検証: `node --test scripts/test-affiliates.cjs`。
 
+カードは自作のカテゴリ用イラストと「イメージイラスト」の明示を使い、商品そのものを描いた写真や広告主の公式バナーとは区別する。提供された `kind: "html"` の広告素材は加工しない。画像の来歴は `assets/ILLUSTRATIONS.md`、デザイン判断は `DESIGN.md` に記載。
+トップの図解は既存の `VIZ` と `TERMS` を使う。停止ボタン・OSのモーション抑制・非表示／画面外の停止に対応し、外部アニメーションライブラリは追加しない。
+
 - 広告リンクには自動で `rel="nofollow sponsored noopener"` と「PR」表記が付く（景品表示法のステマ規制対応）
 - 広告カードは、DNT / GPC が無効な場合だけ、画面内50%以上・連続1秒の表示を `affiliate_view`、クリックを `affiliate_click` としてGA4へ送る。送信値は `provider`・`advertiser_id`・`placement`・`action` の固定ラベルだけで、リンクURL・検索語・用語IDは送らない
 - 外部ドメインの画像を使う広告は、`index.html` の CSP（`img-src`）にドメインの追加が必要な場合がある
@@ -146,6 +151,14 @@ Googleの広告コードはheadで一度だけ読み込み、未配信と判定�
 `ASSETS` に載せるファイルを増減したときは `CACHE` のバージョン文字列を上げること。
 
 ## 検証
+
+用語検索の表記ゆれ・質問形・候補順位、全236用語ページのcanonical/言語/構造化データ/検索フォーム、内容を変えていない用語の日付を検査する：
+
+```
+node --test scripts/test-search.cjs scripts/test-affiliates.cjs scripts/test-ad-placements.cjs
+```
+
+`scripts/build-pages.js` の `CONTENT_UPDATED` には、本文や意味・検索説明を変更した用語ページの改訂日を記録する。共通の検索/UI修正だけで全用語の内容改訂日を更新しない。ホームと日本語用語一覧の今回の変更日は `pageDate` に記録している。既存のCSS内容が同じ再生成では、ページごとのCSS参照版も保持する。
 
 ```
 node scripts/build-pages.js

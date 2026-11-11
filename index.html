@@ -34,9 +34,9 @@
 {"@context":"https://schema.org","@type":"FAQPage","inLanguage":"ja","mainEntity":[
 {"@type":"Question","name":"ピッチの辞書は無料で使えますか？","acceptedAnswer":{"@type":"Answer","text":"はい。サッカー用語118語すべて無料で読めます。会員登録も不要です。"}},
 {"@type":"Question","name":"サッカー用語の図解は本物の試合映像ですか？","acceptedAnswer":{"@type":"Answer","text":"いいえ。すべてオリジナルの戦術ボード（SVGアニメーション）で表現しています。実際の試合映像・写真は一切使用していません。"}},
-{"@type":"Question","name":"オフラインでも読めますか？","acceptedAnswer":{"@type":"Answer","text":"一度開けばブラウザに保存され（PWA）、ホーム画面に追加するとアプリのように起動できます。オフラインでも閲覧できます。"}},
-{"@type":"Question","name":"ハーフスペースとは何ですか？","acceptedAnswer":{"@type":"Answer","text":"ピッチを縦に5分割したときの、中央とサイドの間のエリアです。守備側が「誰がマークに行くべきか」を迷いやすいため、近年の攻撃で重視されています。"}},
-{"@type":"Question","name":"xG（期待ゴール）とは何ですか？","acceptedAnswer":{"@type":"Answer","text":"シュートがどれくらいの確率でゴールになるかを、位置や状況から数値化した指標です。0〜1の値で表し、試合内容を得点以外の面から評価できます。"}}
+{"@type":"Question","name":"オフラインでも読めますか？","acceptedAnswer":{"@type":"Answer","text":"一度開いたホーム画面や保存済みのページは、PWAのキャッシュからオフラインでも閲覧できます。まだ保存されていないページは通信が必要です。"}},
+{"@type":"Question","name":"ハーフスペースとは何ですか？","acceptedAnswer":{"@type":"Answer","text":"ピッチを縦に5分割したときの、中央とサイドの間のエリアです。ハーフスペースの意味と動く図解で位置を確認できます。"}},
+{"@type":"Question","name":"xG（ゴール期待値）とは何ですか？","acceptedAnswer":{"@type":"Answer","text":"シュートがどれくらいの確率でゴールになるかを、位置や状況から数値化した指標です。xGの意味と図解で読み方を紹介しています。"}}
 ]}
 </script>
 <script type="application/ld+json">
@@ -169,6 +169,13 @@ header::after{ /* アクセントバー（白・黒・イエロー） */
 }
 .qsug button:last-child{border-bottom:none}
 .qsug button:hover,.qsug button.act{background:#FFF6DC}
+.watchterms{margin:22px auto 28px;max-width:760px;text-align:left}
+.watchterms h2{font-size:15px;margin:0 0 10px;color:var(--muted)}
+.watchterms ul{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:9px}
+.watchterms a{display:block;border:1px solid rgba(20,45,95,.2);border-radius:8px;padding:10px 14px;background:rgba(255,255,255,.7);color:inherit;text-decoration:none;font-weight:800}
+.watchterms a:hover,.watchterms a:focus-visible{background:#FFF0BF;outline:2px solid #8D6600;outline-offset:2px}
+html[data-theme="dark"] .watchterms a{background:#14233E;border-color:#3C5072}
+html[data-theme="dark"] .watchterms a:hover,html[data-theme="dark"] .watchterms a:focus-visible{background:#253951;outline-color:var(--accent)}
 .qsug .qs-cat{font-size:11px;font-weight:800;flex:none}
 .qsug .qs-name{font-family:var(--round);font-weight:900;font-size:15px}
 .qsug .qs-en{font-family:Oswald;font-size:11px;color:var(--muted);margin-left:auto;text-transform:uppercase;letter-spacing:.05em}
@@ -784,6 +791,7 @@ html[data-theme="dark"] .usage .who{color:#6EC1FF}
 html[data-theme="dark"] .rel button{background:#0E1E3A;color:#7CCBFF;border-color:rgba(80,170,255,.35)}
 html[data-theme="dark"] .rel button:hover{background:#12294A}
 </style>
+<link rel="stylesheet" href="/polish.css?v=20261111">
 </head>
 <body>
 
@@ -861,7 +869,7 @@ html[data-theme="dark"] .rel button:hover{background:#12294A}
     <button id="langtog" class="langtog" type="button" aria-label="Switch language / 言語切替">EN</button>
     <div class="search">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3D4F73" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-      <input id="q" type="search" placeholder="用語を検索（例：ハーフスペース、xG、ディレイ…）" autocomplete="off" role="combobox" aria-autocomplete="list" aria-controls="qsug" aria-expanded="false">
+      <input id="q" type="search" aria-label="サッカー用語を検索" placeholder="用語を検索（例：ハーフスペース、xG、ディレイ…）" autocomplete="off" role="combobox" aria-autocomplete="list" aria-controls="qsug" aria-expanded="false">
       <button id="qclear" class="qclear" type="button" aria-label="検索をクリア">✕</button>
       <div id="qsug" class="qsug" role="listbox" aria-label="検索候補"></div>
     </div>
@@ -869,25 +877,27 @@ html[data-theme="dark"] .rel button:hover{background:#12294A}
 </header>
 
 <main class="wrap">
-  <section class="hero">
-    <div class="kicker">Football Terms, Visualized</div>
-    <h1>実況の「今の言葉、何？」を<br><span class="u">3秒で図解</span>する辞書。</h1>
-    <p>⚽ ハーフスペース？ ネガトラ？ xG？——サッカーにそこまで詳しくなくても大丈夫。動く戦術ボードで、観戦がもっと面白くなる。🏟️</p>
-
-    <div class="herohero">
-      <img class="heropng" src="mascotc.webp" alt="実況ボールくん（ピッチの辞書マスコット）" width="520" height="490" decoding="async">
-
-      <div class="herocapwrap">
-        <span class="herocap">タップすると<b>動く戦術ボード</b>で3秒図解 ⚽ 全<span id="tcount">…</span>語収録</span>
-      </div>
+  <section class="hero hero-v2" aria-labelledby="hero-title">
+    <div class="hero-copy">
+      <div class="kicker">動く図解でわかる、サッカー用語</div>
+      <h1 id="hero-title">実況の「？」が、<br><span class="u">観る楽しさに。</span></h1>
+      <p class="hero-lead">サッカー用語118語を、短い説明と動く戦術ボードで。無料・登録不要で、気になった言葉から調べられます。</p>
+      <div id="heroSearchMount"></div>
+      <nav class="watchterms" aria-label="観戦前に読みたいサッカー用語">
+        <h2>観戦前に、まずはこの6語</h2>
+        <ul><li><a href="/terms/offside/">オフサイド</a></li><li><a href="/terms/press/">ハイプレス</a></li><li><a href="/terms/buildup/">ビルドアップ</a></li><li><a href="/terms/negatrans/">ネガトラ</a></li><li><a href="/terms/xg/">xG（ゴール期待値）</a></li><li><a href="/terms/wallpass/">ワンツー（壁パス）</a></li></ul>
+      </nav>
+      <a class="all-terms-link" href="/terms/">全118語の一覧を見る →</a>
     </div>
-
+    <div class="hero-demo" id="heroDemo">
+      <div class="hero-demo-heading"><h2 id="heroDemoLabel">動く図解を、試してみよう。</h2><button id="heroMotion" type="button" aria-pressed="false">動きを止める</button></div>
+      <button class="hero-board-button" id="heroExpand" type="button" aria-label="ハイプレスの図解を大きく見る"><span class="viz hero-viz" id="heroViz"></span></button>
+      <noscript><p>図解は<a href="/terms/press/">ハイプレスの用語ページ</a>でも読めます。</p></noscript>
+      <div class="hero-demo-caption"><div><h3 id="heroTerm">ハイプレス</h3><p id="heroMeaning">敵陣の深い位置から、集団でボールを奪いに行く守備。</p><a id="heroMore" href="/terms/press/">この用語を詳しく →</a></div><img class="hero-mascot" src="/mascotc.webp" alt="実況ボールくん" width="92" height="87" decoding="async"></div>
+      <div class="hero-choices" role="group" aria-label="図解の用語を選ぶ"><button type="button" data-hero-term="press" aria-pressed="true">ハイプレス</button><button type="button" data-hero-term="wallpass" aria-pressed="false">ワンツー</button><button type="button" data-hero-term="offside" aria-pressed="false">オフサイド</button></div>
+    </div>
     <div class="share">
-      <span class="slbl">友だちにシェア：</span>
-      <a class="sbtn x" id="sh-x" target="_blank" rel="noopener noreferrer">𝕏 ポスト</a>
-      <a class="sbtn line" id="sh-line" target="_blank" rel="noopener noreferrer">💬 LINE</a>
-      <a class="sbtn fb" id="sh-fb" target="_blank" rel="noopener noreferrer">f シェア</a>
-      <button class="sbtn cp" id="sh-copy">🔗 リンクをコピー</button>
+      <span class="slbl">友だちにシェア：</span><a class="sbtn x" id="sh-x" target="_blank" rel="noopener noreferrer">𝕏 ポスト</a><a class="sbtn line" id="sh-line" target="_blank" rel="noopener noreferrer">💬 LINE</a><a class="sbtn fb" id="sh-fb" target="_blank" rel="noopener noreferrer">f シェア</a><button class="sbtn cp" id="sh-copy">🔗 リンクをコピー</button>
     </div>
   </section>
 
@@ -923,17 +933,21 @@ html[data-theme="dark"] .rel button:hover{background:#12294A}
     </ul>
     <h3>よくある質問</h3>
     <dl class="seofaq">
-      <dt>Q. 無料で使えますか？</dt>
+      <dt>Q. ピッチの辞書は無料で使えますか？</dt>
       <dd>A. はい。全<span class="tc">118</span>語すべて無料で、会員登録も不要です。</dd>
       <dt>Q. オフラインでも読めますか？</dt>
-      <dd>A. 一度開けばブラウザに保存され（PWA）、ホーム画面に追加すればアプリのように起動できます。iOSアプリ版も準備中です。</dd>
-      <dt>Q. 図解は本物の試合映像ですか？</dt>
+      <dd>A. 一度開いたホーム画面や保存済みのページは、PWAのキャッシュからオフラインでも閲覧できます。まだ保存されていないページは通信が必要です。</dd>
+      <dt>Q. サッカー用語の図解は本物の試合映像ですか？</dt>
       <dd>A. いいえ。すべてオリジナルの戦術ボード（SVGアニメーション）で表現しています。映像・写真は一切使用していません。</dd>
+      <dt>Q. ハーフスペースとは何ですか？</dt>
+      <dd>A. ピッチを縦に5分割したときの、中央とサイドの間のエリアです。<a href="/terms/halfspace/">ハーフスペースの意味と動く図解</a>で位置を確認できます。</dd>
+      <dt>Q. xG（ゴール期待値）とは何ですか？</dt>
+      <dd>A. シュートがどれくらいの確率でゴールになるかを、位置や状況から数値化した指標です。<a href="/terms/xg/">xGの意味と図解</a>で読み方を紹介しています。</dd>
     </dl>
     <p class="seoall"><a href="/terms/">📚 サッカー用語一覧（全<span class="tc">118</span>語）を見る →</a></p>
     <nav class="seolinks" aria-label="全用語ページ">
       <h3>用語ページ一覧</h3>
-      <div id="seolinklist"><a href="/terms/delay/">ディレイ</a><a href="/terms/block/">ブロックを敷く</a><a href="/terms/pocket/">ポケットを突く</a><a href="/terms/linegap/">ライン間で受ける</a><a href="/terms/channel/">チャンネル</a><a href="/terms/press/">ハイプレス</a><a href="/terms/retreat/">リトリート</a><a href="/terms/isolation/">アイソレーション</a><a href="/terms/cutin/">カットイン</a><a href="/terms/overlap/">オーバーラップ</a><a href="/terms/secondball/">セカンドボール</a><a href="/terms/compact/">コンパクト</a><a href="/terms/halfspace/">ハーフスペース</a><a href="/terms/lanes5/">5レーン理論</a><a href="/terms/positional/">ポジショナルプレー</a><a href="/terms/false9/">偽9番</a><a href="/terms/falsesb/">偽サイドバック</a><a href="/terms/negatrans/">ネガティブトランジション</a><a href="/terms/positrans/">ポジティブトランジション</a><a href="/terms/gegen/">ゲーゲンプレス</a><a href="/terms/buildup/">ビルドアップ</a><a href="/terms/overload/">オーバーロード</a><a href="/terms/layoff/">レイオフ</a><a href="/terms/thirdman/">3人目の動き</a><a href="/terms/anchor/">アンカー</a><a href="/terms/storming/">ストーミング</a><a href="/terms/numadv/">数的優位</a><a href="/terms/zonal/">ゾーンディフェンス</a><a href="/terms/xg/">xG</a><a href="/terms/xa/">xA</a><a href="/terms/ppda/">PPDA</a><a href="/terms/heatmap/">ヒートマップ</a><a href="/terms/passnet/">パスネットワーク図</a><a href="/terms/poss/">ポゼッション</a><a href="/terms/progpass/">プログレッシブパス</a><a href="/terms/tilt/">フィールドティルト</a><a href="/terms/kusabi/">楔のパス</a><a href="/terms/covershadow/">カバーシャドウ</a><a href="/terms/hameru/">はめる</a><a href="/terms/duel/">デュエル</a><a href="/terms/pressback/">プレスバック</a><a href="/terms/uranuke/">裏抜け</a><a href="/terms/through/">スルーパス</a><a href="/terms/earlycross/">アーリークロス</a><a href="/terms/intensity/">インテンシティ</a><a href="/terms/flick/">フリック</a><a href="/terms/longthrow/">ロングスロー</a><a href="/terms/thirds/">アタッキングサード</a><a href="/terms/vital/">バイタルエリア</a><a href="/terms/midblock/">ミドルブロック</a><a href="/terms/carry/">コンドゥクシオン</a><a href="/terms/salida/">サリーダ・ラボルピアーナ</a><a href="/terms/diagonal/">ダイアゴナルラン</a><a href="/terms/pin/">ピン留め</a><a href="/terms/highline/">ハイライン</a><a href="/terms/counter/">カウンター</a><a href="/terms/volante/">ボランチ</a><a href="/terms/offside/">オフサイド</a><a href="/terms/offtrap/">オフサイドトラップ</a><a href="/terms/dogso/">DOGSO</a><a href="/terms/var/">VAR</a><a href="/terms/adv/">アドバンテージ</a><a href="/terms/golasso/">ゴラッソ</a><a href="/terms/kamada1mm/">鎌田の1ミリ</a><a href="/terms/physcontact/">フィジカルコンタクト</a><a href="/terms/designed/">デザインされた</a><a href="/terms/arrow/"></a><a href="/terms/intercept/">インターセプト</a><a href="/terms/trap/">トラップ</a><a href="/terms/overhead/">オーバーヘッド</a><a href="/terms/postplay/">ポストプレー</a><a href="/terms/midshot/">ミドルシュート</a><a href="/terms/wallpass/">ワンツー</a><a href="/terms/cross/">クロス</a><a href="/terms/nearfar/">ニアサイド</a><a href="/terms/clear/">クリア</a><a href="/terms/supersub/">スーパーサブ</a><a href="/terms/tame/">溜め</a><a href="/terms/width/">幅を取る</a><a href="/terms/sidechange/">サイドチェンジ</a><a href="/terms/covering/">カバーリング</a><a href="/terms/malicia/">マリーシア</a><a href="/terms/powerplay/">パワープレー</a><a href="/terms/punt/">パントキック</a><a href="/terms/derby/">ダービー</a><a href="/terms/giantkill/">ジャイアントキリング</a><a href="/terms/shadow/">シャドー</a><a href="/terms/falseshadow/">偽シャドー</a><a href="/terms/polyvalent/">ポリバレント</a><a href="/terms/mitoma1mm/">三笘の1ミリ</a><a href="/terms/hydration/">飲水タイム</a><a href="/terms/addtime/">アディショナルタイム</a><a href="/terms/hand/">ハンド</a><a href="/terms/pkfk/">PK</a><a href="/terms/simulation/">シミュレーション</a><a href="/terms/owngoal/">オウンゴール</a><a href="/terms/assist/">アシスト</a><a href="/terms/hattrick/">ハットトリック</a><a href="/terms/cleansheet/">クリーンシート</a><a href="/terms/points/">勝ち点</a><a href="/terms/apt/">APT</a><a href="/terms/sanokaishu/">佐野回収</a><a href="/terms/dashiukete/">出し手と受け手</a><a href="/terms/gameclose/">ゲームをクローズする</a><a href="/terms/cutcourse/">コースを切る</a><a href="/terms/futa/">蓋をする</a><a href="/terms/cutback/">カットバック</a><a href="/terms/gearup/">ギアを上げる</a><a href="/terms/tacticalace/">戦術三笘</a><a href="/terms/footiq/">サッカーIQ</a><a href="/terms/kahen/">可変システム</a><a href="/terms/kuitsuki/">食いつかせる</a><a href="/terms/immersiveview/">イマーシブビュー</a><a href="/terms/refereeview/">レフェリービュー</a><a href="/terms/count5/">5秒カウントダウン</a><a href="/terms/sub10/">交代時の10秒ルール</a><a href="/terms/injury1min/">負傷治療後の1分待機</a><a href="/terms/adidasball/">adidasボール</a></div>
+      <div id="seolinklist"><a href="/terms/delay/">ディレイ</a><a href="/terms/block/">ブロックを敷く</a><a href="/terms/pocket/">ポケットを突く</a><a href="/terms/linegap/">ライン間で受ける</a><a href="/terms/channel/">チャンネル</a><a href="/terms/press/">ハイプレス</a><a href="/terms/retreat/">リトリート</a><a href="/terms/isolation/">アイソレーション</a><a href="/terms/cutin/">カットイン</a><a href="/terms/overlap/">オーバーラップ</a><a href="/terms/secondball/">セカンドボール</a><a href="/terms/compact/">コンパクト</a><a href="/terms/halfspace/">ハーフスペース</a><a href="/terms/lanes5/">5レーン理論</a><a href="/terms/positional/">ポジショナルプレー</a><a href="/terms/false9/">偽9番</a><a href="/terms/falsesb/">偽サイドバック</a><a href="/terms/negatrans/">ネガティブトランジション</a><a href="/terms/positrans/">ポジティブトランジション</a><a href="/terms/gegen/">ゲーゲンプレス</a><a href="/terms/buildup/">ビルドアップ</a><a href="/terms/overload/">オーバーロード</a><a href="/terms/layoff/">レイオフ</a><a href="/terms/thirdman/">3人目の動き</a><a href="/terms/anchor/">アンカー</a><a href="/terms/storming/">ストーミング</a><a href="/terms/numadv/">数的優位</a><a href="/terms/zonal/">ゾーンディフェンス</a><a href="/terms/xg/">xG</a><a href="/terms/xa/">xA</a><a href="/terms/ppda/">PPDA</a><a href="/terms/heatmap/">ヒートマップ</a><a href="/terms/passnet/">パスネットワーク図</a><a href="/terms/poss/">ポゼッション</a><a href="/terms/progpass/">プログレッシブパス</a><a href="/terms/tilt/">フィールドティルト</a><a href="/terms/kusabi/">楔のパス</a><a href="/terms/covershadow/">カバーシャドウ</a><a href="/terms/hameru/">はめる</a><a href="/terms/duel/">デュエル</a><a href="/terms/pressback/">プレスバック</a><a href="/terms/uranuke/">裏抜け</a><a href="/terms/through/">スルーパス</a><a href="/terms/earlycross/">アーリークロス</a><a href="/terms/intensity/">インテンシティ</a><a href="/terms/flick/">フリック</a><a href="/terms/longthrow/">ロングスロー</a><a href="/terms/thirds/">アタッキングサード</a><a href="/terms/vital/">バイタルエリア</a><a href="/terms/midblock/">ミドルブロック</a><a href="/terms/carry/">コンドゥクシオン</a><a href="/terms/salida/">サリーダ・ラボルピアーナ</a><a href="/terms/diagonal/">ダイアゴナルラン</a><a href="/terms/pin/">ピン留め</a><a href="/terms/highline/">ハイライン</a><a href="/terms/counter/">カウンター</a><a href="/terms/volante/">ボランチ</a><a href="/terms/offside/">オフサイド</a><a href="/terms/offtrap/">オフサイドトラップ</a><a href="/terms/dogso/">DOGSO</a><a href="/terms/var/">VAR</a><a href="/terms/adv/">アドバンテージ</a><a href="/terms/golasso/">ゴラッソ</a><a href="/terms/kamada1mm/">鎌田の1ミリ</a><a href="/terms/physcontact/">フィジカルコンタクト</a><a href="/terms/designed/">デザインされた</a><a href="/terms/arrow/">攻守の矢印</a><a href="/terms/intercept/">インターセプト</a><a href="/terms/trap/">トラップ</a><a href="/terms/overhead/">オーバーヘッド</a><a href="/terms/postplay/">ポストプレー</a><a href="/terms/midshot/">ミドルシュート</a><a href="/terms/wallpass/">ワンツー</a><a href="/terms/cross/">クロス</a><a href="/terms/nearfar/">ニアサイド</a><a href="/terms/clear/">クリア</a><a href="/terms/supersub/">スーパーサブ</a><a href="/terms/tame/">溜め</a><a href="/terms/width/">幅を取る</a><a href="/terms/sidechange/">サイドチェンジ</a><a href="/terms/covering/">カバーリング</a><a href="/terms/malicia/">マリーシア</a><a href="/terms/powerplay/">パワープレー</a><a href="/terms/punt/">パントキック</a><a href="/terms/derby/">ダービー</a><a href="/terms/giantkill/">ジャイアントキリング</a><a href="/terms/shadow/">シャドー</a><a href="/terms/falseshadow/">偽シャドー</a><a href="/terms/polyvalent/">ポリバレント</a><a href="/terms/mitoma1mm/">三笘の1ミリ</a><a href="/terms/hydration/">飲水タイム</a><a href="/terms/addtime/">アディショナルタイム</a><a href="/terms/hand/">ハンド</a><a href="/terms/pkfk/">PK</a><a href="/terms/simulation/">シミュレーション</a><a href="/terms/owngoal/">オウンゴール</a><a href="/terms/assist/">アシスト</a><a href="/terms/hattrick/">ハットトリック</a><a href="/terms/cleansheet/">クリーンシート</a><a href="/terms/points/">勝ち点</a><a href="/terms/apt/">APT</a><a href="/terms/sanokaishu/">佐野回収</a><a href="/terms/dashiukete/">出し手と受け手</a><a href="/terms/gameclose/">ゲームをクローズする</a><a href="/terms/cutcourse/">コースを切る</a><a href="/terms/futa/">蓋をする</a><a href="/terms/cutback/">カットバック</a><a href="/terms/gearup/">ギアを上げる</a><a href="/terms/tacticalace/">戦術三笘</a><a href="/terms/footiq/">サッカーIQ</a><a href="/terms/kahen/">可変システム</a><a href="/terms/kuitsuki/">食いつかせる</a><a href="/terms/immersiveview/">イマーシブビュー</a><a href="/terms/refereeview/">レフェリービュー</a><a href="/terms/count5/">5秒カウントダウン</a><a href="/terms/sub10/">交代時の10秒ルール</a><a href="/terms/injury1min/">負傷治療後の1分待機</a><a href="/terms/adidasball/">adidasボール</a></div>
     </nav>
   </section>
 </main>
@@ -3403,10 +3417,28 @@ const SADBALL=`<svg viewBox="0 0 130 130" xmlns="http://www.w3.org/2000/svg" ari
 </svg>`;
 
 function esc(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-function norm(s){return s.toLowerCase().replace(/[ァ-ン]/g,ch=>String.fromCharCode(ch.charCodeAt(0)-96))}
+function norm(s){return String(s||"").normalize("NFKC").toLowerCase().replace(/[ァ-ヶ]/g,ch=>String.fromCharCode(ch.charCodeAt(0)-96)).replace(/[・･]/g,"")}
+const SEARCH_ALIASES={
+  press:["プレッシング"],negatrans:["ネガトラ"],positrans:["ポジトラ"],
+  xg:["期待ゴール","ゴール期待値"],nearfar:["ニア","ニアポスト","ファー","ファーポスト"],
+  pkfk:["ペナルティキック","フリーキック","FK"],wallpass:["ワンツー","壁パス","one two","give and go"]
+};
+function shortTermName(t){return t.name.split("（")[0].split("／")[0]||t.name.replace(/[（）]/g,"")}
+function searchWords(kw){
+  const raw=norm(kw).trim();
+  const clean=raw.replace(/[?？]/g,"").replace(/(?:とは|の意味|って何|ってなに)$/u,"").replace(/^(?:what is|what are)\s+/,"").replace(/\s+(?:meaning|definition)$/,"").replace(/^さっかー(?:用語)?(?:の)?\s*/,"").trim();
+  return (clean||raw).split(/\s+/).filter(Boolean);
+}
+function searchNames(t){return [t.name,t.kana,t.en].concat(SEARCH_ALIASES[t.id]||[])}
 function matches(t,kw){
-  if(!kw)return true;kw=norm(kw);
-  return [t.name,t.kana,t.en,t.one].some(s=>norm(s).includes(kw));
+  const words=searchWords(kw);if(!words.length)return true;
+  const fields=searchNames(t).concat(t.one).map(norm);
+  return words.every(word=>fields.some(field=>field.includes(word)));
+}
+function matchingTerms(kw){
+  const needle=searchWords(kw).join("");
+  const score=t=>searchNames(t).some(s=>norm(s).replace(/\s+/g,"")===needle)?0:searchNames(t).some(s=>norm(s).includes(needle))?1:2;
+  return TERMS.filter(t=>matches(t,kw)).sort((a,b)=>score(a)-score(b));
 }
 function cardHTML(t){
   const stars="★".repeat(t.lvl)+"☆".repeat(3-t.lvl);
@@ -3431,7 +3463,7 @@ window.toggleSec=cat=>{
 function render(){
   const kw=q.value.trim();
   if(filter!=="all"||kw){ /* 単一カテゴリー or 検索時はフラット表示 */
-    const list=TERMS.filter(t=>(filter==="all"||t.cat===filter)&&matches(t,kw));
+    const list=matchingTerms(kw).filter(t=>filter==="all"||t.cat===filter);
     grid.innerHTML=list.length?list.map(cardHTML).join("")
     :`<div class="empty">${SADBALL}${I18N[lang].empty(esc(kw))}</div>`;
     return;
@@ -3500,21 +3532,32 @@ document.getElementById("tabs").addEventListener("click",e=>{
 });
 /* ===== 検索：サジェスト／決定でジャンプ／×クリア ===== */
 const qclear=document.getElementById("qclear"), qsug=document.getElementById("qsug");
-function hideSug(){qsug.classList.remove("show");qsug.innerHTML="";q.setAttribute("aria-expanded","false");}
+let sugActive=-1;
+function hideSug(){qsug.classList.remove("show");qsug.innerHTML="";q.setAttribute("aria-expanded","false");q.removeAttribute("aria-activedescendant");sugActive=-1;}
 window.qJump=function(id){openModal(id);hideSug();};
 function suggest(){
   const kw=q.value.trim();
   qclear.classList.toggle("show",!!kw);
   if(!kw){hideSug();return;}
-  const list=TERMS.filter(t=>matches(t,kw)).slice(0,8);
+  const list=matchingTerms(kw).slice(0,8);
   if(!list.length){hideSug();return;}
-  qsug.innerHTML=list.map(t=>`<button type="button" role="option" onclick="qJump('${t.id}')"><span class="qs-cat" style="color:${CAT[t.cat].d}">${CAT[t.cat].label.split(" ")[0]}</span><span class="qs-name">${esc(t.name.split("（")[0].split("／")[0])}</span><span class="qs-en">${esc(t.en)}</span></button>`).join("");
+  sugActive=-1;q.removeAttribute("aria-activedescendant");
+  qsug.innerHTML=list.map(t=>`<button id="qs-${t.id}" type="button" role="option" aria-selected="false" onclick="qJump('${t.id}')"><span class="qs-cat" style="color:${CAT[t.cat].d}">${CAT[t.cat].label.split(" ")[0]}</span><span class="qs-name">${esc(shortTermName(t))}</span><span class="qs-en">${esc(t.en)}</span></button>`).join("");
   qsug.classList.add("show");q.setAttribute("aria-expanded","true");
 }
 q.addEventListener("input",()=>{suggest();render();});
 q.addEventListener("focus",suggest);
 q.addEventListener("keydown",e=>{
-  if(e.key==="Enter"){const f=qsug.querySelector("button");if(f){e.preventDefault();f.click();}}
+  if(e.isComposing)return;
+  if(e.key==="ArrowDown"||e.key==="ArrowUp"){
+    if(!qsug.classList.contains("show"))suggest();
+    const options=Array.from(qsug.querySelectorAll("button"));if(!options.length)return;
+    e.preventDefault();
+    sugActive=e.key==="ArrowDown"?(sugActive+1)%options.length:(sugActive<0?options.length-1:(sugActive-1+options.length)%options.length);
+    options.forEach((option,i)=>{option.classList.toggle("act",i===sugActive);option.setAttribute("aria-selected",String(i===sugActive));});
+    q.setAttribute("aria-activedescendant",options[sugActive].id);
+  }
+  else if(e.key==="Enter"){const f=qsug.querySelector('button[aria-selected="true"]')||qsug.querySelector("button");if(f){e.preventDefault();f.click();}}
   else if(e.key==="Escape"){hideSug();}
 });
 qclear.addEventListener("click",()=>{q.value="";suggest();render();q.focus();});
@@ -3773,7 +3816,7 @@ document.addEventListener("keydown",e=>{
   else if(mback.classList.contains("open"))closeModal();
 });
 
-document.getElementById("tcount").textContent=TERMS.length;
+var termCount=document.getElementById("tcount");if(termCount)termCount.textContent=TERMS.length;
 /* SEOブロック：語数の反映と、全用語ページへの内部リンク生成 */
 (function(){
   var n=TERMS.length;
@@ -3782,7 +3825,7 @@ document.getElementById("tcount").textContent=TERMS.length;
   var box=document.getElementById("seolinklist");
   if(box){
     box.innerHTML=TERMS.map(function(t){
-      var nm=t.name.split("（")[0].split("／")[0];
+      var nm=shortTermName(t);
       return '<a href="/terms/'+t.id+'/">'+esc(nm)+"</a>";
     }).join("");
   }
@@ -3817,10 +3860,10 @@ const I18N={
   toggle:"EN",
   brand:"ピッチの辞書",brandsub:"PITCH DICTIONARY",
   search:"用語を検索（例：ハーフスペース、xG、ディレイ…）",
-  kicker:"Football Terms, Visualized",
-  h1:'実況の「今の言葉、何？」を<br><span class="u">3秒で図解</span>する辞書。',
-  lead:"⚽ ハーフスペース？ ネガトラ？ xG？——サッカーにそこまで詳しくなくても大丈夫。動く戦術ボードで、観戦がもっと面白くなる。🏟️",
-  trend:"いま実況・SNSでよく飛び交うワード",
+  kicker:"動く図解でわかる、サッカー用語",
+  h1:'実況の「？」が、<br><span class="u">観る楽しさに。</span>',
+  lead:"サッカー用語118語を、短い説明と動く戦術ボードで。無料・登録不要で、気になった言葉から調べられます。",
+  trend:"実況で気になった言葉から",
   cap:function(n){return 'タップすると<b>動く戦術ボード</b>で3秒図解 ⚽ 全'+n+'語収録';},
   share:"友だちにシェア：",shX:"𝕏 ポスト",shLine:"💬 LINE",shFb:"f シェア",shCopy:"🔗 リンクをコピー",copied:"✅ コピーしました！",
   tabs:{all:"すべて",live:"🎙 実況・ライブ",column:"📝 コラム・分析",data:"📊 データ・スタッツ",rule:"⚖️ ルール・審判"},
@@ -3842,9 +3885,9 @@ const I18N={
   brand:"PITCH DICTIONARY",brandsub:"Football terms, visualized",
   search:"Search terms (e.g. half-space, xG, delay…)",
   kicker:"Football Terms, Visualized",
-  h1:'The dictionary that turns “what did the commentator just say?” into a <span class="u">3-second explainer</span>.',
-  lead:"⚽ Half-space? Negative transition? xG? — You don’t have to be a football buff. Animated tactics boards make watching way more fun. 🏟️",
-  trend:"Trending in live commentary & social right now",
+  h1:'Learn the words.<br><span class="u">See the game.</span>',
+  lead:"118 football terms, explained with short definitions and animated tactics boards. Free to use, with no sign-up.",
+  trend:"Start with a word you heard",
   cap:function(n){return 'Tap a card for a <b>3-second animated</b> explainer ⚽ '+n+' terms';},
   share:"Share:",shX:"𝕏 Post",shLine:"💬 LINE",shFb:"f Share",shCopy:"🔗 Copy link",copied:"✅ Copied!",
   tabs:{all:"All",live:"🎙 Live",column:"📝 Column",data:"📊 Data",rule:"⚖️ Rules"},
@@ -3867,7 +3910,7 @@ function applyLang(l){
   lang=(l==="en")?"en":"ja";const T=I18N[lang];
   try{localStorage.setItem("pd_lang",lang);}catch(_){}
   document.documentElement.lang=lang;
-  q.placeholder=T.search;
+  q.placeholder=T.search;q.setAttribute("aria-label",T.search);
   var lb=_qs(".logo b");if(lb&&T.brand)lb.textContent=T.brand;
   var ls=_qs(".logo small");if(ls&&T.brandsub)ls.textContent=T.brandsub;
   var k=_qs(".hero .kicker");if(k)k.textContent=T.kicker;
@@ -3908,6 +3951,7 @@ function applyLang(l){
   if(typeof setShare==="function")setShare();
   /* 「ピッチの辞書とは」は日本語の検索向けの説明と日本語ページへのリンク集なので、英語表示では出さない */
   var sb=_qs(".seoblock");if(sb)sb.style.display=lang==="en"?"none":"";
+  var wt=_qs(".watchterms");if(wt)wt.hidden=lang==="en";
   /* アフィリエイトの広告主はすべて日本国内向け。英語表示に切り替えたら枠を描き直す（affiliates.js の langs で出し分け） */
   document.querySelectorAll('.affslot[data-aff="home"]').forEach(function(el){
     el.setAttribute("data-lang",lang);el.removeAttribute("data-aff-done");el.innerHTML="";el.hidden=true;
@@ -3964,8 +4008,9 @@ function applyLang(l){
 
 </script>
 <!-- アフィリエイト広告（A8.net / もしもアフィリエイト）。掲載内容の設定は affiliates.js を編集する -->
-<script src="/affiliates.js" defer></script>
+<script src="/affiliates.js?v=20261111" defer></script>
 <!-- koko-ask-chatgpt -->
 <script src="/ask-chatgpt.js?v=2" data-product="pitch" defer></script>
+<script src="/polish.js?v=20261111" defer></script>
 </body>
 </html>

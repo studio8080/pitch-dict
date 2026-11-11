@@ -23,13 +23,13 @@
  *
  * ⚠️ ASSETS に載せたファイルを増減したら CACHE のバージョンを上げること。
  */
-const CACHE = "pitch-v11";
+const CACHE = "pitch-v12";
 const ASSETS = [
   "/", "/index.html", "/mascotc.webp", "/icon.svg",
   "/icon-512.png", "/manifest.json", "/og-v2.png",
-  "/terms.css", "/affiliates.js?v=20261111", "/ask-chatgpt.js?v=1", "/terms/", "/404.html",
+  "/terms.css", "/affiliates.js?v=20261111b", "/ask-chatgpt.js?v=3", "/terms/", "/404.html",
   "/en/", "/en/terms/",
-  "/polish.css?v=20261111", "/polish.js?v=20261111",
+  "/polish.css?v=20261111b", "/polish.js?v=20261111",
   "/assets/affiliate-viewing-v01.webp", "/assets/affiliate-books-v01.webp", "/assets/affiliate-goods-v01.webp"
 ];
 

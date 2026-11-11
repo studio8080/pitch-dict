@@ -91,16 +91,19 @@ window.PD_AFF = {
       cats: ["live", "column", "rule"],
     },
     {
-      enabled: true, kind: "card",
+      enabled: true, kind: "html",
       provider: "moshimo", advertiserId: "rakuten_tactics_books",
-      badge: "楽天市場",
-      title: "サッカー戦術の本",
+      badge: "楽天ブックス・新書",
+      title: "林陵平のサッカー観戦術2",
+      homePriority: 20,
       contextPriority: 10,
-      desc: "ハーフスペースやポジショナルプレーをもっと深く。戦術・分析の書籍を楽天で探せます。",
-      btn: "戦術本を探す",
-      url: pdRakutenSearch("サッカー 戦術 本"),
-      imp: PD_RAKUTEN_IMP,
-      slots: ["term", "modal"], cats: ["column"],
+      desc: "用語の次は、試合の見方も。ハイプレスやブロックなど、戦術を読む手掛かりを深める新書。",
+      btn: "本の内容を楽天で見る",
+      url: "//af.moshimo.com/af/c/click?a_id=5791139&p_id=54&pc_id=54&pl_id=616&url=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F18472582%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fbook%2Fi%2F21820887%2F",
+      /* 2026-11-11: ピッチ登録メディアの商品リンク作成UIで発行。
+         UIが明示的に許可するリンクテキストのみ短縮。画像・URL・計測画像は発行内容を保持。 */
+      html: `<a href="//af.moshimo.com/af/c/click?a_id=5791139&amp;p_id=54&amp;pc_id=54&amp;pl_id=616&amp;url=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F18472582%2F&amp;m=http%3A%2F%2Fm.rakuten.co.jp%2Fbook%2Fi%2F21820887%2F" rel="nofollow" referrerpolicy="no-referrer-when-downgrade"><img src="//thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/0993/9784582860993_1_17.jpg?_ex=300x300" alt="" style="border: none;" /><br>林陵平のサッカー観戦術2（平凡社新書）</a><img src="//i.moshimo.com/af/i/impression?a_id=5791139&amp;p_id=54&amp;pc_id=54&amp;pl_id=616" alt="" loading="lazy" width="1" height="1" style="border: 0px;">`,
+      slots: ["home", "term", "modal"], cats: ["column"],
     },
     {
       enabled: true, kind: "card",
@@ -127,14 +130,15 @@ window.PD_AFF = {
       slots: ["term", "modal"], cats: ["rule"],
     },
     {
-      enabled: true, kind: "card",
+      enabled: true, kind: "html",
       provider: "moshimo", advertiserId: "rakuten_fan_goods",
-      badge: "楽天市場",
-      title: "観戦グッズ・サッカーボール",
-      desc: "スタジアム観戦のおともに。マフラータオル、ユニフォーム、ボールなど。",
-      btn: "観戦グッズを見る",
-      url: pdRakutenSearch("サッカー 観戦 グッズ"),
-      imp: PD_RAKUTEN_IMP,
+      badge: "楽天市場・Soccer Junky",
+      title: "JUST A TOUCH Tシャツ",
+      homePriority: 10,
+      desc: "サッカーを、普段着にも。イラストが主役の半袖Tシャツ。素材やサイズはショップで確認できます。",
+      btn: "デザイン・サイズを楽天で見る",
+      url: "//af.moshimo.com/af/c/click?a_id=5791139&p_id=54&pc_id=54&pl_id=616&url=https%3A%2F%2Fitem.rakuten.co.jp%2Fcasa-paterna%2Fsj26g43%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fcasa-paterna%2Fi%2F10009912%2F",
+      html: `<a href="//af.moshimo.com/af/c/click?a_id=5791139&amp;p_id=54&amp;pc_id=54&amp;pl_id=616&amp;url=https%3A%2F%2Fitem.rakuten.co.jp%2Fcasa-paterna%2Fsj26g43%2F&amp;m=http%3A%2F%2Fm.rakuten.co.jp%2Fcasa-paterna%2Fi%2F10009912%2F" rel="nofollow" referrerpolicy="no-referrer-when-downgrade"><img src="//thumbnail.image.rakuten.co.jp/@0_mall/casa-paterna/cabinet/12931887/sj/sj26g43_tmb.jpg?_ex=300x300" alt="" style="border: none;" /><br>Soccer Junky JUST A TOUCH Tシャツ</a><img src="//i.moshimo.com/af/i/impression?a_id=5791139&amp;p_id=54&amp;pc_id=54&amp;pl_id=616" alt="" loading="lazy" width="1" height="1" style="border: 0px;">`,
       slots: ["home"],
     },
 
@@ -198,11 +202,12 @@ window.PD_AFF = {
     });
     /* 絞り込み後、件数で切る前に優先度を適用する。
        戦術モーダルは2枠なので、従来の固定順では戦術本が一度も掲載されなかった。
-       同順位は設定順を維持し、トップの並びと掲載件数は変えない。 */
-    if (slot !== "home") {
+       同順位は設定順を維持。トップは個別商品の優先度を使い、最大掲載件数は維持する。 */
+    {
+      var priorityKey = slot === "home" ? "homePriority" : "contextPriority";
       eligible = eligible.map(function (it, index) { return { item: it, index: index }; })
         .sort(function (a, b) {
-          return (Number(b.item.contextPriority) || 0) - (Number(a.item.contextPriority) || 0) || a.index - b.index;
+          return (Number(b.item[priorityKey]) || 0) - (Number(a.item[priorityKey]) || 0) || a.index - b.index;
         }).map(function (entry) { return entry.item; });
     }
     return eligible.slice(0, (A.max && A.max[slot]) || 3);
@@ -216,7 +221,7 @@ window.PD_AFF = {
     var kind = /books/.test(it.advertiserId || "") ? "books"
       : /goods|xebio/.test(it.advertiserId || "") ? "goods" : "viewing";
     var illustration = { books: "本と戦術ボード", goods: "ウェアとトートバッグ", viewing: "テレビとサッカーボール" }[kind];
-    return '<a class="affcard" href="' + esc(it.url) + '" target="_blank" rel="nofollow sponsored noopener" referrerpolicy="no-referrer-when-downgrade"'
+    return '<a class="affcard" data-aff-title="' + esc(it.title) + '" href="' + esc(it.url) + '" target="_blank" rel="nofollow sponsored noopener" referrerpolicy="no-referrer-when-downgrade"'
       + ' data-aff-provider="' + esc(it.provider || "unknown") + '"'
       + ' data-aff-advertiser="' + esc(it.advertiserId || "unknown") + '"'
       + ' data-aff-placement="' + esc(placement(slot, ctx)) + '">'
@@ -226,6 +231,19 @@ window.PD_AFF = {
       + "<b>" + esc(it.title) + "</b>"
       + (it.desc ? "<p>" + esc(it.desc) + "</p>" : "")
       + '<span class="affbtn">' + esc(it.btn || "詳しく見る") + " →</span></span></a>";
+  }
+  function providedCardHTML(it, slot, ctx) {
+    /* The issued fragment stays intact; only link text changes explicitly permitted by
+       the product-link UI are made in configuration. Never hide its tracking image. */
+    return '<article class="affcard affprovided" data-aff-title="' + esc(it.title) + '" data-aff-provided="1"'
+      + ' data-aff-provider="' + esc(it.provider || "unknown") + '"'
+      + ' data-aff-advertiser="' + esc(it.advertiserId || "unknown") + '"'
+      + ' data-aff-placement="' + esc(placement(slot, ctx)) + '">'
+      + '<div class="affprovided-art">' + it.html + '</div><div class="affbody">'
+      + (it.badge ? '<span class="affbadge">' + esc(it.badge) + '</span>' : '')
+      + (it.desc ? '<p>' + esc(it.desc) + '</p>' : '')
+      + '<a class="affbtn" href="' + esc(it.url) + '" target="_blank" rel="nofollow sponsored noopener" referrerpolicy="no-referrer-when-downgrade">'
+      + esc(it.btn || '詳しく見る') + ' →</a></div></article>';
   }
   function impHTML(it) {
     /* インプレッション計測用の1x1画像。
@@ -257,7 +275,9 @@ window.PD_AFF = {
     Array.prototype.forEach.call(links, function (link) {
       if (link.getAttribute("data-aff-measured")) return;
       link.setAttribute("data-aff-measured", "1");
-      link.addEventListener("click", function () {
+      link.addEventListener("click", function (event) {
+        if (link.getAttribute("data-aff-provided") === "1"
+          && (!event || !event.target || typeof event.target.closest !== "function" || !event.target.closest("a"))) return;
         sendAffiliateEvent("affiliate_click", link, "click");
       }, { passive: true });
     });
@@ -297,11 +317,11 @@ window.PD_AFF = {
       };
       var items = pick(slot, ctx);
       if (!items.length) { el.hidden = true; return; }
-      var cards = items.filter(function (i) { return i.kind !== "html"; });
-      var raws = items.filter(function (i) { return i.kind === "html"; });
+      var cards = items.filter(function (i) { return i.kind !== "html" || (i.title && i.url); });
+      var raws = items.filter(function (i) { return i.kind === "html" && !(i.title && i.url); });
       var title = (slot !== "home" && A.contextTitles && A.contextTitles[ctx.cat]) || (A.titles && A.titles[slot]) || "おすすめ";
       var h = '<div class="affbox"><div class="afft"><span class="affpr">PR</span>' + esc(title) + "</div>";
-      if (cards.length) h += '<div class="affgrid">' + cards.map(function (it) { return cardHTML(it, slot, ctx); }).join("") + "</div>";
+      if (cards.length) h += '<div class="affgrid">' + cards.map(function (it) { return it.kind === "html" ? providedCardHTML(it, slot, ctx) : cardHTML(it, slot, ctx); }).join("") + "</div>";
       if (raws.length) h += '<div class="affraw"' + (cards.length ? ' style="margin-top:10px"' : "") + ">" + raws.map(function (i) { return "<div>" + i.html + "</div>"; }).join("") + "</div>";
       if (A.disclosure) h += '<p class="affnote">' + esc(A.disclosure) + "</p>";
       /* インプレッション計測用の1x1画像は枠の外（見えない位置）にまとめる */

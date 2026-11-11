@@ -22,11 +22,11 @@ function fixture(slot, cat = '', lang = 'ja', term = '') {
 }
 
 function titles(node) {
-  return [...node.innerHTML.matchAll(/<b>(.*?)<\/b>/g)].map(match => match[1]);
+  return [...node.innerHTML.matchAll(/data-aff-title="([^"]*)"/g)].map(match => match[1]);
 }
 
 for (const [cat, book, other, heading] of [
-  ['column', 'サッカー戦術の本', 'WOWOW（ワウワウ）', '戦術をもっと深く知る'],
+  ['column', '林陵平のサッカー観戦術2', 'WOWOW（ワウワウ）', '戦術をもっと深く知る'],
   ['data', 'サッカーのデータ分析本', 'WOWOW（ワウワウ）', 'サッカーのデータをもっと詳しく'],
   ['rule', 'サッカー競技規則の本', 'スカパー！', '判定やルールをもっと詳しく'],
 ]) {
@@ -41,13 +41,13 @@ for (const [cat, book, other, heading] of [
 test('term page keeps three cards and the same eligible advertisers', () => {
   const f = fixture('term', 'column');
   f.render();
-  assert.deepEqual(titles(f.node), ['サッカー戦術の本', 'WOWOW（ワウワウ）', 'スカパー！']);
+  assert.deepEqual(titles(f.node), ['林陵平のサッカー観戦術2', 'WOWOW（ワウワウ）', 'スカパー！']);
 });
 
-test('home keeps existing five-card order and heading', () => {
+test('home introduces one book and replaces the generic goods slot within its six-card limit', () => {
   const f = fixture('home');
   f.render();
-  assert.deepEqual(titles(f.node), ['WOWOW（ワウワウ）', 'スカパー！', '観戦グッズ・サッカーボール', 'ABEMAプレミアム', 'サッカー用品・スパイク']);
+  assert.deepEqual(titles(f.node), ['林陵平のサッカー観戦術2', 'JUST A TOUCH Tシャツ', 'WOWOW（ワウワウ）', 'スカパー！', 'ABEMAプレミアム', 'サッカー用品・スパイク']);
   assert.ok(f.node.innerHTML.includes('サッカー観戦をもっと楽しむ'));
 });
 
@@ -78,7 +78,7 @@ test('priority cannot bypass eligibility filters', () => {
   ]) f.window.PD_AFF.items.unshift({ kind: 'card', title: 'ineligible', contextPriority: 999, ...item });
   f.render();
   assert.equal(f.node.innerHTML.includes('example.invalid'), false);
-  assert.equal(titles(f.node)[0], 'サッカー戦術の本');
+  assert.equal(titles(f.node)[0], '林陵平のサッカー観戦術2');
 });
 
 test('PR, existing affiliate URLs and impression pixels are retained', () => {
@@ -89,20 +89,21 @@ test('PR, existing affiliate URLs and impression pixels are retained', () => {
     const item = f.window.PD_AFF.items.find(item => item.title === title);
     const escape = value => value.replace(/&/g, '&amp;');
     assert.ok(f.node.innerHTML.includes(`href="${escape(item.url)}"`));
-    assert.ok(f.node.innerHTML.includes(`src="${escape(item.imp)}"`));
+    if (item.imp) assert.ok(f.node.innerHTML.includes(`src="${escape(item.imp)}"`));
+    else assert.ok(f.node.innerHTML.includes(item.html));
   }
   assert.equal((f.node.innerHTML.match(/rel="nofollow sponsored noopener"/g) || []).length, 2);
   assert.ok(f.node.innerHTML.includes('class="affpr">PR'));
   assert.ok(f.node.innerHTML.includes(f.window.PD_AFF.disclosure));
-  const pixels = f.node.innerHTML.match(/<img[^>]*width="1" height="1"[^>]*>/g) || [];
-  for (const pixel of pixels) assert.equal(pixel.includes('loading="lazy"'), false);
+  const ownPixelBox = f.node.innerHTML.match(/<div style="position:absolute;width:0;height:0;overflow:hidden">([\s\S]*?)<\/div>/)[1];
+  assert.equal(ownPixelBox.includes('loading="lazy"'), false);
   assert.equal((f.node.innerHTML.match(/width="1" height="1"/g) || []).length, 2);
 });
 
 test('illustrations match the category, disclose their nature and do not impersonate product photos', () => {
   const f = fixture('home');
   f.render();
-  const book = fixture('modal', 'column');
+  const book = fixture('modal', 'data');
   book.render();
   for (const category of ['viewing', 'books', 'goods']) {
     assert.ok((f.node.innerHTML + book.node.innerHTML).includes('/assets/affiliate-' + category + '-v01.webp'));
@@ -121,7 +122,7 @@ test('repeated rendering does not duplicate cards or pixels', () => {
   assert.equal(f.node.getAttribute('data-aff-done'), '1');
 });
 
-function measurementFixture({ dnt = '0', globalPrivacyControl = false } = {}) {
+function measurementFixture({ dnt = '0', globalPrivacyControl = false, provided = false } = {}) {
   const attrs = {
     'data-aff': 'modal', 'data-cat': 'column', 'data-lang': 'ja', 'data-term': 'halfspace',
   };
@@ -129,6 +130,7 @@ function measurementFixture({ dnt = '0', globalPrivacyControl = false } = {}) {
     'data-aff-provider': 'moshimo',
     'data-aff-advertiser': 'rakuten_tactics_books',
     'data-aff-placement': 'modal_column',
+    'data-aff-provided': provided ? '1' : '',
   };
   const handlers = {};
   const link = {
@@ -178,6 +180,32 @@ test('affiliate click and one-second 50% view use fixed privacy-safe dimensions'
   const payload = JSON.stringify(f.calls);
   assert.equal(payload.includes('http'), false);
   assert.equal(payload.includes('halfspace'), false);
+});
+
+test('provided product cards measure link clicks but do not count blank-area clicks', () => {
+  const f = measurementFixture({ provided: true });
+  f.handlers.click({ target: { closest() { return null; } } });
+  assert.equal(f.calls.length, 0);
+  f.handlers.click({ target: { closest() { return { tagName: 'A' }; } } });
+  assert.equal(f.calls.length, 1);
+  assert.equal(f.calls[0][1], 'affiliate_click');
+});
+
+test('official product HTML preserves all URLs, images and attributes; only permitted link text changes', () => {
+  const issued = JSON.parse(fs.readFileSync(path.join(__dirname, '../assets/affiliate-products-issued-20261111.json'), 'utf8').replace(/^\uFEFF/, ''));
+  const f = fixture('home');
+  const withoutText = html => html.replace(/<br>[^<]*(?=<\/a>)/, '<br>LINK_TEXT');
+  for (const [id, key] of [['rakuten_tactics_books', 'book'], ['rakuten_fan_goods', 'shirt']]) {
+    const item = f.window.PD_AFF.items.find(it => it.advertiserId === id);
+    assert.equal(withoutText(item.html), withoutText(issued[key]));
+    assert.ok(!/ポイント|倍|送料無料|最安/.test(item.html));
+    const href = item.html.match(/href="([^"]+)"/)[1].replace(/&amp;/g, '&');
+    assert.equal(item.url, href);
+    assert.equal(new URL(href, 'https://pitch.kokokikaku.com').searchParams.get('a_id'), '5791139');
+  }
+  f.render();
+  assert.equal((f.node.innerHTML.match(/data-aff-provided="1"/g) || []).length, 2);
+  assert.equal((f.node.innerHTML.match(/width="1" height="1"/g) || []).length, 6);
 });
 
 for (const privacy of [{ dnt: '1' }, { globalPrivacyControl: true }]) {

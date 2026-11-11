@@ -13,6 +13,8 @@
       en: { title: 'Think through your space.', intro: 'Ask your own ChatGPT about the tool and planning basics.', about: 'A browser tool for placing fixtures at real dimensions in mm on a PDF/image floor plan or a blank sheet. It helps explore layouts; it does not certify building-code compliance or replace a qualified designer.', questions: ['How do I import a floor plan and set its scale?', 'How should I think about aisles and fixture sizes?', 'How do I save and revisit a layout?'], guides: [['Getting started', '/en/'], ['Restaurant floor plans', '/en/restaurant-floor-plan.html'], ['Fixture sizes', '/en/fixture-sizes.html']] }
     },
     pitch: {
+      // Rakuten's current program excludes Threads URLs, including links to the affiliate media.
+      allowThreadsShare: false,
       name: 'ピッチの辞書 / PITCH DICTIONARY', origin: 'https://pitch.kokokikaku.com', accent: '#111c36', soft: '#fff8df',
       ja: { title: 'そのプレー、もう少し知りたい。', intro: '用語や戦術の見方を、自分のChatGPTで深める。', about: 'サッカーの用語を短い説明と独自の動く戦術ボードで学べる日英の無料辞書。', questions: ['このページの用語を初心者向けに説明して', '実際のプレーを見るときの注目点は？', '関連する用語も比べながら教えて'], guides: [['用語一覧', '/terms/'], ['英語の用語一覧', '/en/terms/']] },
       en: { title: 'Read the game a little deeper.', intro: 'Explore football terms with your own ChatGPT.', about: 'A free bilingual football glossary with short explanations and original animated tactics boards.', questions: ['Explain the term on this page for a beginner', 'What should I watch for during a match?', 'Compare this with related football terms'], guides: [['Football glossary', '/en/terms/'], ['Japanese glossary', '/terms/']] }
@@ -188,7 +190,7 @@
     // Share only published references. Never include editor state, query strings or fragments.
     // Meta's documented web intent opens a composer; the visitor chooses whether to post.
     function addThreads() {
-      if (typeof document === 'undefined') return;
+      if (typeof document === 'undefined' || product.allowThreadsShare === false) return;
       const selectors = { menufits: '.lpshare,.site-sns-share', misefits: '.foot-share,.site-sns-share', pitch: '.share,.tshare,.mshare', kabufits: '[data-page-share]', kininarumono: '.share[data-share]', company: '.site-sns-share' };
       document.querySelectorAll(selectors[productId]).forEach(bar => {
         let share = bar.querySelector('.koko-threads-share');
@@ -207,7 +209,7 @@
     }
     addThreads();
     const shareObserver = new MutationObserver(addThreads);
-    if (productId === 'pitch') shareObserver.observe(document.body, { childList: true, subtree: true });
+    if (productId === 'pitch' && product.allowThreadsShare !== false) shareObserver.observe(document.body, { childList: true, subtree: true });
     close.addEventListener('click', () => dialog.close());
     dialog.addEventListener('close', () => lastTrigger.focus());
     copy.addEventListener('click', async () => {

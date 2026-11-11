@@ -77,6 +77,13 @@ header::after{display:none}
 .affcard:focus-visible{outline:3px solid #806000;outline-offset:3px}
 .affmedia{display:block;background:#F2F2ED;overflow:hidden}
 .affmedia img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+.affprovided-art{padding:18px 16px 0;background:#fff;color:#12203C}
+.affprovided-art>a{display:block;color:#12203C;font-size:15px;font-weight:800;line-height:1.6;text-decoration:none}
+.affprovided-art>a:hover{text-decoration:underline}
+.affprovided-art>a>img{display:block;width:auto;max-width:100%;height:auto;max-height:220px;margin:0 auto 12px;object-fit:contain}
+.affprovided-art>img[width="1"]{display:block;width:1px;height:1px}
+.affprovided .affbody{padding-top:12px}
+.affprovided .affbtn{text-decoration:none;font-weight:800;line-height:1.6}
 .affbody{display:flex;flex:1;flex-direction:column;padding:14px 15px 16px;min-width:0}
 .affcaption{display:block;font-size:10px;color:#778174;margin:-3px 0 9px}
 .affcard .affbadge{align-self:flex-start;background:transparent;border:0;color:#56704F;font-size:10px;padding:0;margin:0 0 5px}

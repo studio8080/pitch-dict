@@ -277,7 +277,7 @@ ${adsClient ? `<!-- Google AdSense -->
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&family=Oswald:wght@600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/terms.css?v=${today.replace(/-/g, "")}">
-<link rel="stylesheet" href="/polish.css?v=20261111">
+<link rel="stylesheet" href="/polish.css?v=20261111b">
 </head>
 <body>
 ${sharedDefs}
@@ -311,9 +311,9 @@ function foot(lang) {
     <p class="tfcopy">© 2026 ${esc(u.company)} / ${esc(u.brand)}</p>
   </div>
 </footer>
-<script src="/affiliates.js?v=20261111" defer></script>
+<script src="/affiliates.js?v=20261111b" defer></script>
 <!-- koko-ask-chatgpt -->
-<script src="/ask-chatgpt.js?v=2" data-product="pitch" defer></script>
+<script src="/ask-chatgpt.js?v=3" data-product="pitch" defer></script>
 </body>
 </html>
 `;

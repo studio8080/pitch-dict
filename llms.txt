@@ -197,7 +197,7 @@
 - [鎌田の1ミリ](https://pitch.kokokikaku.com/terms/kamada1mm/): 2026年W杯オランダ戦、鎌田の頭を1ミリかすめて決まった同点弾。
 - [フィジカルコンタクト](https://pitch.kokokikaku.com/terms/physcontact/): 体のぶつけ合い。肩と肩の正当な接触はサッカーの一部。
 - [デザインされた](https://pitch.kokokikaku.com/terms/designed/): 練習で仕込んだサインプレーで崩すFK・CKのこと。
-- [](https://pitch.kokokikaku.com/terms/arrow/): 選手の勢い・重心が向いている方向のこと。
+- [攻守の矢印](https://pitch.kokokikaku.com/terms/arrow/): 選手の勢い・重心が向いている方向のこと。
 - [インターセプト](https://pitch.kokokikaku.com/terms/intercept/): 相手のパスを途中で読み切って奪うこと。
 - [トラップ](https://pitch.kokokikaku.com/terms/trap/): 来たボールを止めて、次のプレーに繋げる技術。
 - [オーバーヘッド](https://pitch.kokokikaku.com/terms/overhead/): 宙に浮いて、頭より高いボールを後方に蹴り込む大技。

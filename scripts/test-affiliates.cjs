@@ -94,8 +94,22 @@ test('PR, existing affiliate URLs and impression pixels are retained', () => {
   assert.equal((f.node.innerHTML.match(/rel="nofollow sponsored noopener"/g) || []).length, 2);
   assert.ok(f.node.innerHTML.includes('class="affpr">PR'));
   assert.ok(f.node.innerHTML.includes(f.window.PD_AFF.disclosure));
-  assert.equal(f.node.innerHTML.includes('loading="lazy"'), false);
+  const pixels = f.node.innerHTML.match(/<img[^>]*width="1" height="1"[^>]*>/g) || [];
+  for (const pixel of pixels) assert.equal(pixel.includes('loading="lazy"'), false);
   assert.equal((f.node.innerHTML.match(/width="1" height="1"/g) || []).length, 2);
+});
+
+test('illustrations match the category, disclose their nature and do not impersonate product photos', () => {
+  const f = fixture('home');
+  f.render();
+  const book = fixture('modal', 'column');
+  book.render();
+  for (const category of ['viewing', 'books', 'goods']) {
+    assert.ok((f.node.innerHTML + book.node.innerHTML).includes('/assets/affiliate-' + category + '-v01.webp'));
+  }
+  const cards = (f.node.innerHTML.match(/class="affcard"/g) || []).length;
+  assert.equal((f.node.innerHTML.match(/class="affcaption">イメージイラスト/g) || []).length, cards);
+  assert.equal((f.node.innerHTML.match(/width="1536" height="1024" loading="lazy"/g) || []).length, cards);
 });
 
 test('repeated rendering does not duplicate cards or pixels', () => {

@@ -144,7 +144,7 @@ window.PD_AFF = {
     {
       enabled: true, kind: "card",
       provider: "a8", advertiserId: "abema_premium",
-      badge: "日本代表戦・海外サッカー",
+      badge: "サッカー番組・配信",
       title: "ABEMAプレミアム",
       desc: "サッカー中継やオリジナル番組が見放題。試合を観ながら用語の意味を確かめたい人へ。",
       btn: "ABEMAを見る",
@@ -211,14 +211,21 @@ window.PD_AFF = {
     return slot + (ctx.cat ? "_" + ctx.cat : "_general");
   }
   function cardHTML(it, slot, ctx) {
+    /* Own category illustrations, never a product photo or a broadcaster's logo.
+       Issued affiliate URLs, PR labeling and measurement are kept as configured. */
+    var kind = /books/.test(it.advertiserId || "") ? "books"
+      : /goods|xebio/.test(it.advertiserId || "") ? "goods" : "viewing";
+    var illustration = { books: "本と戦術ボード", goods: "ウェアとトートバッグ", viewing: "テレビとサッカーボール" }[kind];
     return '<a class="affcard" href="' + esc(it.url) + '" target="_blank" rel="nofollow sponsored noopener" referrerpolicy="no-referrer-when-downgrade"'
       + ' data-aff-provider="' + esc(it.provider || "unknown") + '"'
       + ' data-aff-advertiser="' + esc(it.advertiserId || "unknown") + '"'
       + ' data-aff-placement="' + esc(placement(slot, ctx)) + '">'
+      + '<span class="affmedia"><img src="/assets/affiliate-' + kind + '-v01.webp" alt="' + illustration + 'のイメージイラスト" width="1536" height="1024" loading="lazy" decoding="async"></span>'
+      + '<span class="affbody"><small class="affcaption">イメージイラスト</small>'
       + (it.badge ? '<span class="affbadge">' + esc(it.badge) + "</span>" : "")
       + "<b>" + esc(it.title) + "</b>"
       + (it.desc ? "<p>" + esc(it.desc) + "</p>" : "")
-      + '<span class="affbtn">' + esc(it.btn || "詳しく見る") + " →</span></a>";
+      + '<span class="affbtn">' + esc(it.btn || "詳しく見る") + " →</span></span></a>";
   }
   function impHTML(it) {
     /* インプレッション計測用の1x1画像。

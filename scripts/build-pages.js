@@ -31,6 +31,13 @@ const { execSync } = require("child_process");
 
 const ROOT = path.join(__dirname, "..");
 const SITE = "https://pitch.kokokikaku.com";
+const UPDATES = JSON.parse(fs.readFileSync(path.join(ROOT, "scripts", "updates.json"), "utf8"));
+if (!/^\d{4}-\d{2}-\d{2}$/.test(UPDATES.modified) || !Array.isArray(UPDATES.entries) || !UPDATES.entries.length ||
+    UPDATES.entries.some((entry, i) => !/^\d{4}-\d{2}-\d{2}$/.test(entry.date) || entry.date > UPDATES.modified ||
+      (i > 0 && entry.date > UPDATES.entries[i - 1].date) || ["ja", "en"].some(lang => !entry[lang]?.title ||
+        !Array.isArray(entry[lang].items) || !entry[lang].items.length || entry[lang].items.some(item => typeof item !== "string" || !item.trim())))) {
+  throw new Error("更新情報は実公開日順で、日英の見出しと本文をそろえてください");
+}
 // index.html は CRLF。抽出・照合はすべて LF に正規化した上で行う
 const src = fs.readFileSync(path.join(ROOT, "index.html"), "utf8").replace(/\r\n/g, "\n");
 
@@ -177,7 +184,7 @@ try { lastmod = execSync("git log -1 --format=%cs -- index.html", { cwd: ROOT })
 // UI/search fixes do not revise every term's explanation. Preserve its known content date.
 const CONTENT_UPDATED = { "terms/arrow": "2026-11-11", "terms/wallpass": "2026-11-11" };
 const previousMeta = new Map();
-for (const rel of ["terms", "en", "en/terms", ...TERMS.flatMap(t=>["terms/"+t.id,"en/terms/"+t.id])]) {
+for (const rel of ["terms", "en", "en/terms", "updates", "en/updates", ...TERMS.flatMap(t=>["terms/"+t.id,"en/terms/"+t.id])]) {
   const file=path.join(ROOT,rel,"index.html");
   if(!fs.existsSync(file))continue;
   const html=fs.readFileSync(file,"utf8");
@@ -233,7 +240,7 @@ const ogImage = (lang) => (lang === "en" ? "og-en.png" : "og-v2.png");
 // iOSアプリ（日本のApp Storeのみで配信中）への Safari スマートバナー。英語ページには出さない。
 const APP_BANNER = '<meta name="apple-itunes-app" content="app-id=6794986070">\n';
 
-function head({ lang, title, desc, url, altUrl, altPath, jsonld, ogType = "article" }) {
+function head({ lang, title, desc, url, altUrl, altPath, jsonld, ogType = "article", includeAds = true }) {
   const u = UI[lang];
   const jaUrl = lang === "ja" ? url : altUrl;
   const enUrl = lang === "en" ? url : altUrl;
@@ -268,7 +275,7 @@ ${jsonld.map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</sc
 ${gaId ? `<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=${gaId}"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',region:["AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV","LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE","IS","LI","NO","GB","CH"]});gtag('js',new Date());gtag('config','${gaId}');</script>` : ""}
-${adsClient ? `<!-- Google AdSense -->
+${adsClient && includeAds ? `<!-- Google AdSense -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsClient}" crossorigin="anonymous"></script>` : ""}
 <link rel="icon" type="image/svg+xml" href="/icon.svg">
 <link rel="apple-touch-icon" href="/icon-512.png">
@@ -295,14 +302,14 @@ ${sharedDefs}
 `;
 }
 
-function foot(lang) {
+function foot(lang, { showUpdates = false, includeAffiliates = true } = {}) {
   const u = UI[lang];
   return `
 <footer class="tf">
   <div class="wrap">
     <nav class="tfnav" aria-label="${lang === "ja" ? "サイト内リンク" : "Site links"}">
       <a href="${homePath(lang)}">${esc(u.home)}</a>
-      <a href="${indexPath(lang)}">${esc(u.glossary)}</a>
+      <a href="${indexPath(lang)}">${esc(u.glossary)}</a>${showUpdates ? `\n      <a href="${lang === "ja" ? "/updates/" : "/en/updates/"}">${lang === "ja" ? "更新情報" : "Updates"}</a>` : ""}
       <a href="/privacy.html${lang === "en" ? "#en" : ""}">${esc(u.privacy)}</a>
       <a href="https://docs.google.com/forms/d/e/1FAIpQLSeqM293xJzyK9ft7QF4lvvim8A679jueHyFA1YDXeUypalYwA/viewform" target="_blank" rel="noopener">${esc(u.contact)}</a>
       <a href="https://kokokikaku.com/" target="_blank" rel="noopener">${esc(u.company)}</a>
@@ -311,7 +318,7 @@ function foot(lang) {
     <p class="tfcopy">© 2026 ${esc(u.company)} / ${esc(u.brand)}</p>
   </div>
 </footer>
-<script src="/affiliates.js?v=20261111b" defer></script>
+${includeAffiliates ? '<script src="/affiliates.js?v=20261111b" defer></script>' : ""}
 <!-- koko-ask-chatgpt -->
 <script src="/ask-chatgpt.js?v=3" data-product="pitch" defer></script>
 </body>
@@ -659,7 +666,37 @@ function enLanding() {
     </nav>
   </article>
 </main>
-` + foot("en");
+` + foot("en", { showUpdates: true });
+}
+
+/* Public updates describe released Web features only; the two pages share one source. */
+function updatesPage(lang) {
+  const en = lang === "en";
+  const name = en ? "Updates" : "更新情報";
+  const url = abs(en ? "/en/updates/" : "/updates/");
+  const altPath = en ? "/updates/" : "/en/updates/";
+  const title = en ? "Updates | PITCH DICTIONARY" : "更新情報 | ピッチの辞書";
+  const desc = en ? "Released improvements to the PITCH DICTIONARY website, including search and animated tactics-board introductions." : "ピッチの辞書Web版で公開した改善の記録です。用語検索と動く戦術ボードの入口などの変更を、公開日とともに紹介します。";
+  const jsonld = [{ "@context": "https://schema.org", "@type": "WebPage", name: title, url, inLanguage: lang,
+    dateModified: UPDATES.modified, isPartOf: { "@type": "WebSite", name: UI[lang].brand, url: abs(homePath(lang)) } },
+    { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [
+      { "@type": "ListItem", position: 1, name: UI[lang].brand, item: abs(homePath(lang)) },
+      { "@type": "ListItem", position: 2, name, item: url }] }];
+  const html = head({ lang, title, desc, url, altUrl: abs(altPath), altPath, jsonld, ogType: "website", includeAds: false }) + `
+<main class="wrap tmain tindex">
+  <article class="tarticle">
+    <nav class="crumb" aria-label="${en ? "Breadcrumb" : "パンくず"}"><a href="${homePath(lang)}">${esc(UI[lang].brand)}</a> › <span>${name}</span></nav>
+    <h1>${name}</h1>
+    <p class="tlead">${en ? "Changes already released on the website, listed by their release dates." : "Web版で公開した改善を、実際の公開日とともに載せています。"}</p>
+    ${UPDATES.entries.map(entry => `<section class="tstep"><time datetime="${entry.date}">${entry.date}</time>
+      <h2>${esc(entry[lang].title)}</h2>
+      <ul>${entry[lang].items.map(item => `<li>${esc(item)}</li>`).join("\n")}</ul>
+    </section>`).join("\n")}
+    <p class="tapp"><a class="tbtn" href="/?lang=${lang}">${en ? "Open the interactive dictionary" : "動く図解で用語を探す"}</a></p>
+  </article>
+</main>
+` + foot(lang, { includeAffiliates: false });
+  return html.replace(/[ \t]+$/gm, "");
 }
 
 /* ---------- 8) CSS ---------- */
@@ -847,6 +884,8 @@ for (const lang of ["ja", "en"]) {
   writePage(lang === "ja" ? "terms" : "en/terms", indexPage(lang));
 }
 writePage("en", enLanding());
+writePage("updates", updatesPage("ja"));
+writePage("en/updates", updatesPage("en"));
 fs.writeFileSync(path.join(ROOT, "terms.css"), css);
 
 /* index.html の内部リンク一覧を静的に埋め込む（JSを実行しないクローラー対策） */
@@ -880,6 +919,8 @@ for (const lang of ["ja", "en"]) {
   }
 }
 urls.push({ loc: abs("/privacy.html"), lastmod:pageDate("/privacy.html"), changefreq: "yearly", priority: "0.2" });
+urls.push({ loc: abs("/updates/"), lastmod: UPDATES.modified, changefreq: "monthly", priority: "0.3" });
+urls.push({ loc: abs("/en/updates/"), lastmod: UPDATES.modified, changefreq: "monthly", priority: "0.3" });
 
 fs.writeFileSync(path.join(ROOT, "sitemap.xml"),
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n` +
@@ -898,6 +939,8 @@ fs.writeFileSync(path.join(ROOT, "llms.txt"), [
   "- English home: " + abs("/en/"),
   "- All English terms: " + abs("/en/terms/"),
   "- Japanese home (日本語): " + abs("/"),
+  "- Website updates (English): " + abs("/en/updates/"),
+  "- Web版の更新情報 (日本語): " + abs("/updates/"),
   "- Privacy policy: " + abs("/privacy.html"),
   "- Publisher: Koko Kikaku (ここ企画), Kyoto, Japan — https://kokokikaku.com/",
   "",
@@ -911,4 +954,4 @@ fs.writeFileSync(path.join(ROOT, "llms.txt"), [
   "",
 ].join("\n"));
 
-console.log(`✅ 日本語 ${TERMS.length + 1} ページ / 英語 ${TERMS.length + 2} ページ / terms.css / sitemap.xml（${urls.length} URL）/ llms.txt を生成しました。lastmod=${lastmod}`);
+console.log(`✅ 日本語 ${TERMS.length + 2} ページ / 英語 ${TERMS.length + 3} ページ / terms.css / sitemap.xml（${urls.length} URL）/ llms.txt を生成しました。lastmod=${lastmod}`);

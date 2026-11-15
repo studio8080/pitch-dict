@@ -78,9 +78,9 @@ test('home FAQ structured answers are also visible, and introductory links exist
   for(const id of ['offside','press','buildup','negatrans','xg','wallpass'])assert.ok(source.match(/<nav class="watchterms"[\s\S]*?<\/nav>/)[0].includes('/terms/'+id+'/'));
   assert.ok(body.includes('まだ保存されていないページは通信が必要'));
 });
-test('sitemap keeps all 241 canonical pages and does not invent a new privacy update date',()=>{
+test('sitemap keeps all 243 canonical pages and does not invent a new privacy update date',()=>{
   const sitemap=fs.readFileSync(path.join(root,'sitemap.xml'),'utf8');
-  assert.equal([...sitemap.matchAll(/<url>/g)].length,241);
+  assert.equal([...sitemap.matchAll(/<url>/g)].length,243);
   const old=execFileSync('git',['show','origin/main:sitemap.xml'],{cwd:root,encoding:'utf8'});
   const privacy=xml=>xml.match(/<loc>https:\/\/pitch.kokokikaku.com\/privacy.html<\/loc><lastmod>([^<]+)/)[1];
   assert.equal(privacy(sitemap),privacy(old));

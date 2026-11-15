@@ -1,0 +1,22 @@
+{
+  "modified": "2026-11-16",
+  "entries": [
+    {
+      "date": "2026-11-11",
+      "ja": {
+        "title": "用語を探す入口と検索を改善しました",
+        "items": [
+          "質問形式、全角・半角、かなや別名から用語を探しやすくしました。検索候補は上下キーで選び、Enterで開き、Escapeで閉じられます。",
+          "トップに、実際に動く3つの戦術ボードと観戦前に見たい用語への入口を用意しました。動きを止める操作や、端末の動きを抑える設定にも対応しています。"
+        ]
+      },
+      "en": {
+        "title": "Better search and a clearer starting point",
+        "items": [
+          "Search now handles questions, full-width and half-width characters, Japanese kana and alternative names more easily. Use the Up and Down keys to select a suggestion, Enter to open it and Escape to close the suggestions.",
+          "The interactive home page now introduces three animated tactics boards and links to useful terms before a match. You can pause the animation, and the site respects your device's reduced-motion setting."
+        ]
+      }
+    }
+  ]
+}

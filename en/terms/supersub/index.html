@@ -41,6 +41,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&family=Oswald:wght@600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/terms.css?v=20261001">
 <link rel="stylesheet" href="/polish.css?v=20261111b">
+<link rel="stylesheet" href="/viz-controls.css?v=20261116">
+<script src="/viz-controls.js?v=20261116" defer></script>
 </head>
 <body>
 <!-- 共有グラデーション＆フィルター定義 -->
@@ -92,7 +94,7 @@
 
     <section class="tstep">
       <h2><span class="snum">2</span>🎬 See it move</h2>
-      <div class="viz"><svg viewBox="0 0 600 320" xmlns="http://www.w3.org/2000/svg">
+      <div class="viz" id="term-viz" data-viz-controls><svg viewBox="0 0 600 320" xmlns="http://www.w3.org/2000/svg">
   <rect x="40" y="200" width="180" height="60" rx="10" fill="#182642" stroke="#4FC3F7" stroke-width="2"/>
   <text x="130" y="237" text-anchor="middle" font-size="13" font-weight="bold" fill="#BDE9FF" stroke="#0A1420" stroke-width="3.2" stroke-linejoin="round" style="paint-order:stroke" class="">Bench</text>
   <circle cx="130" cy="160" r="16" fill="#4FC3F7" stroke="#0B1220" stroke-width="2.5" class="mv" style="--dx:220px;--dy:-40px;--t:3.5s"/>

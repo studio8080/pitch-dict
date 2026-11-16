@@ -2,6 +2,23 @@
   "modified": "2026-11-16",
   "entries": [
     {
+      "date": "2026-11-16",
+      "ja": {
+        "title": "用語ページの図を止めて確認できるようにしました",
+        "items": [
+          "動く戦術ボードに停止・再開ボタンを追加しました。パスや選手の位置を、止めた状態で確認できます。キーボードでも操作できます。",
+          "端末で「動きを抑える」を選んでいる場合は静止した図を表示し、動かない図には不要な操作を表示しません。"
+        ]
+      },
+      "en": {
+        "title": "Pause tactics boards on term pages",
+        "items": [
+          "Animated tactics boards now have pause and resume controls, so you can inspect a pass or a player's position. The controls also work with a keyboard.",
+          "Diagrams stay still when your device requests reduced motion. Static diagrams do not show unnecessary controls."
+        ]
+      }
+    },
+    {
       "date": "2026-11-11",
       "ja": {
         "title": "用語を探す入口と検索を改善しました",

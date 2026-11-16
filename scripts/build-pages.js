@@ -240,7 +240,7 @@ const ogImage = (lang) => (lang === "en" ? "og-en.png" : "og-v2.png");
 // iOSアプリ（日本のApp Storeのみで配信中）への Safari スマートバナー。英語ページには出さない。
 const APP_BANNER = '<meta name="apple-itunes-app" content="app-id=6794986070">\n';
 
-function head({ lang, title, desc, url, altUrl, altPath, jsonld, ogType = "article", includeAds = true }) {
+function head({ lang, title, desc, url, altUrl, altPath, jsonld, ogType = "article", includeAds = true, includeVizControls = false }) {
   const u = UI[lang];
   const jaUrl = lang === "ja" ? url : altUrl;
   const enUrl = lang === "en" ? url : altUrl;
@@ -285,6 +285,7 @@ ${adsClient && includeAds ? `<!-- Google AdSense -->
 <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&family=Oswald:wght@600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/terms.css?v=${today.replace(/-/g, "")}">
 <link rel="stylesheet" href="/polish.css?v=20261111b">
+${includeVizControls ? '<link rel="stylesheet" href="/viz-controls.css?v=20261116">\n<script src="/viz-controls.js?v=20261116" defer></script>\n' : ''}\
 </head>
 <body>
 ${sharedDefs}
@@ -409,6 +410,8 @@ function termPage(t, lang) {
   const i = sib.findIndex((x) => x.id === t.id);
   const prev = sib[(i - 1 + sib.length) % sib.length], next = sib[(i + 1) % sib.length];
   const svg = vizFor(t, lang);
+  const animatedViz = [...svg.matchAll(/\bclass=["']([^"']*)["']/g)].some(match =>
+    match[1].split(/\s+/).some(name => ['mv', 'mv2', 'pulse', 'dash', 'fadein', 'blinkel'].includes(name)));
 
   const shareText = lang === "ja"
     ? `「${sn}」ってこういう意味⚽ サッカー用語を3秒で図解『ピッチの辞書』`
@@ -451,7 +454,7 @@ function termPage(t, lang) {
     ? `<strong>${esc(sn)}とは</strong>、${esc(one)}`
     : `<strong>${esc(sn)}</strong> — ${esc(one)}`;
 
-  return head({ lang, title, desc, url, altUrl, altPath, jsonld }) + `
+  return head({ lang, title, desc, url, altUrl, altPath, jsonld, includeVizControls: animatedViz }) + `
 <main class="wrap tmain">
   <nav class="crumb" aria-label="${lang === "ja" ? "パンくず" : "Breadcrumb"}"><a href="${homePath(lang)}">${esc(u.crumbHome)}</a> › <a href="${indexPath(lang)}">${esc(u.crumbGlossary)}</a> › <a href="${indexPath(lang)}#cat-${t.cat}">${esc(catName(t.cat, lang))}</a> › <span>${esc(sn)}</span></nav>
 
@@ -471,7 +474,7 @@ function termPage(t, lang) {
 
     <section class="tstep">
       <h2><span class="snum">2</span>${esc(t.id === "apt" ? (lang === "ja" ? "📊 計算例を図で見る" : "📊 An illustrated calculation") : I18N[lang].m2)}</h2>
-      <div class="viz">${svg}</div>
+      <div class="viz"${animatedViz ? ' id="term-viz" data-viz-controls' : ''}>${svg}</div>
       <p class="vizcap">${esc(t.id === "apt" ? (lang === "ja" ? "計算例：100分 − 中断40分 ＝ APT60分。各ハーフの最後に追加する時間とは別です。実際の試合成績ではありません。" : "Example: 100 elapsed minutes − 40 minutes of stoppages = 60 minutes APT. This is time in play, not added time. These are illustrative figures, not match statistics.") : u.vizCap)}</p>
       <p class="tapp"><a class="tbtn" href="${lang === "ja" ? "/#" + t.id : "/?lang=en#" + t.id}">${esc(u.appBtn(TERMS.length - 1))}</a></p>
     </section>

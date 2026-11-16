@@ -19,6 +19,7 @@
 | `en/terms/index.html` | 全用語一覧（英語） | **生成物。直接編集しない** |
 | `en/terms/<id>/index.html` | 用語ページ 英語118枚 | **生成物。直接編集しない** |
 | `terms.css` | 上記ページのCSS（日英共通） | **生成物。直接編集しない** |
+| `viz-controls.js` / `viz-controls.css` | 静的用語ページの動く図を停止・再開する補助。動く図だけに読み込み、端末のモーション抑制設定を優先 | 手で編集する |
 | `sitemap.xml` | サイトマップ（243URL） | **生成物。直接編集しない** |
 | `llms.txt` | AIアシスタント向けのサイト案内（日英の全用語とURL） | **生成物。直接編集しない** |
 | `sw.js` | Service Worker（PWA・オフライン） | 手で編集する |
@@ -72,6 +73,8 @@ node scripts/build-pages.js
 > ⚠️ 生成物もコミットする。GitHub Pages はビルドを行わず、リポジトリのファイルをそのまま配信するため。
 
 Web版の更新を公開したら `scripts/updates.json` に実際の公開日と日英の説明を追加し、同じ生成コマンドを実行する。`modified` は更新情報ページの変更日。未来予定・未公開機能・別のiOSアプリを公開済みとは書かない。日英ホームから辿れる更新情報は `/updates/` と `/en/updates/`。用語の本文・日付や広告設定はこの案内追加に合わせて変更しない。
+
+静的用語ページの図の操作は `scripts/build-pages.js` が動くSVGクラスを判定して有効にする。ボタンは `viz-controls.js` が生成するため、JavaScript無効時には操作できないボタンを残さない。ネイティブのbuttonはEnter/Spaceに対応し、状態は隣のstatusで案内する。`prefers-reduced-motion`時はボタンを隠して図を静止させる。補助JS/CSSを更新するときは生成元の参照版をそろえる。`terms.css`とService Workerのキャッシュ戦略を変更する必要はない。
 
 ## アフィリエイト広告の設定
 

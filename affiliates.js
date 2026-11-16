@@ -282,28 +282,59 @@ window.PD_AFF = {
       }, { passive: true });
     });
     if (typeof IntersectionObserver !== "function") return;
-    var timers = typeof WeakMap === "function" ? new WeakMap() : null;
-    var seen = typeof WeakSet === "function" ? new WeakSet() : null;
+    var records = new Map();
+    function release(record) {
+      clearTimeout(record.timer);
+      records.delete(record.link);
+      observer.unobserve(record.link);
+      if (!records.size && typeof document.removeEventListener === "function") {
+        document.removeEventListener("visibilitychange", onVisibilityChange);
+      }
+    }
+    function eligible(record) {
+      if (document.visibilityState !== "visible" || !record.link.isConnected || record.ratio < 0.5 || !analyticsAllowed()) return false;
+      if (record.link.checkVisibility && !record.link.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true })) return false;
+      var images = record.link.querySelectorAll("img");
+      for (var i = 0; i < images.length; i++) {
+        // The ASP's tracking pixel is not the creative. Keep its issued HTML intact.
+        if (images[i].getAttribute("width") === "1" && images[i].getAttribute("height") === "1") continue;
+        if (!images[i].complete || !images[i].naturalWidth) return false;
+      }
+      return true;
+    }
+    function update(record) {
+      if (record.sent) return;
+      if (!record.link.isConnected) { release(record); return; }
+      if (!eligible(record)) {
+        clearTimeout(record.timer); record.timer = null; return;
+      }
+      if (record.timer !== null) return;
+      record.timer = setTimeout(function () {
+        record.timer = null;
+        if (!eligible(record)) { if (!record.link.isConnected) release(record); return; }
+        record.sent = true;
+        release(record);
+        sendAffiliateEvent("affiliate_view", record.link, "view");
+      }, 1000);
+    }
     var observer = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
-        var link = entry.target;
-        if (seen && seen.has(link)) return;
-        if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
-          if (timers && timers.has(link)) return;
-          var timer = setTimeout(function () {
-            if (seen) seen.add(link);
-            if (timers) timers.delete(link);
-            observer.unobserve(link);
-            sendAffiliateEvent("affiliate_view", link, "view");
-          }, 1000);
-          if (timers) timers.set(link, timer);
-        } else if (timers && timers.has(link)) {
-          clearTimeout(timers.get(link));
-          timers.delete(link);
-        }
+        var record = records.get(entry.target);
+        if (!record) return;
+        record.ratio = entry.isIntersecting ? entry.intersectionRatio : 0;
+        update(record);
       });
     }, { threshold: [0, 0.5] });
-    Array.prototype.forEach.call(links, function (link) { observer.observe(link); });
+    Array.prototype.forEach.call(links, function (link) {
+      var record = { link: link, ratio: 0, timer: null, sent: false };
+      records.set(link, record);
+      Array.prototype.forEach.call(link.querySelectorAll("img"), function (image) {
+        image.addEventListener("load", function () { update(record); });
+      });
+      observer.observe(link);
+    });
+    function onVisibilityChange() { records.forEach(update); }
+    document.addEventListener("visibilitychange", onVisibilityChange);
   }
   function render(root) {
     var nodes = (root || document).querySelectorAll("[data-aff]");

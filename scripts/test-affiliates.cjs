@@ -134,9 +134,11 @@ function measurementFixture({ dnt = '0', globalPrivacyControl = false, provided 
   };
   const handlers = {};
   const link = {
+    isConnected: true,
     getAttribute(name) { return linkAttrs[name] || null; },
     setAttribute(name, value) { linkAttrs[name] = value; },
     addEventListener(name, handler) { handlers[name] = handler; },
+    querySelectorAll() { return []; },
   };
   const node = {
     hidden: true, innerHTML: '',
@@ -144,7 +146,7 @@ function measurementFixture({ dnt = '0', globalPrivacyControl = false, provided 
     setAttribute(name, value) { attrs[name] = value; },
     querySelectorAll(selector) { return selector === '.affcard[data-aff-advertiser]' ? [link] : []; },
   };
-  const document = { readyState: 'loading', addEventListener() {}, querySelectorAll() { return [node]; } };
+  const document = { readyState: 'loading', visibilityState: 'visible', addEventListener() {}, querySelectorAll() { return [node]; } };
   const calls = [];
   let observerCallback;
   let timerCallback;
@@ -215,3 +217,59 @@ for (const privacy of [{ dnt: '1' }, { globalPrivacyControl: true }]) {
     assert.deepEqual(f.calls, []);
   });
 }
+
+// No real DOM, images, network, user storage or affiliate clicks. The clock exercises
+// the actual source's visibility timer, not an imitation of its implementation.
+function viewFixture({ loaded = true, broken = false, pixelPending = false } = {}) {
+  const attrs = { 'data-aff': 'home', 'data-lang': 'ja' };
+  const linkAttrs = { 'data-aff-provider': 'moshimo', 'data-aff-advertiser': 'rakuten_tactics_books', 'data-aff-placement': 'home_general' };
+  const docHandlers = {}, imageHandlers = {}, calls = [], timers = new Map();
+  let now = 0, nextTimer = 0, observerCallback;
+  const image = { complete: loaded, naturalWidth: broken ? 0 : (loaded ? 300 : 0), getAttribute() { return null; }, addEventListener(name, fn) { imageHandlers[name] = fn; } };
+  const pixel = { complete: !pixelPending, naturalWidth: pixelPending ? 0 : 1, getAttribute(name) { return ['width', 'height'].includes(name) ? '1' : null; }, addEventListener() {} };
+  const link = { isConnected: true, getAttribute: name => linkAttrs[name] || null, setAttribute(name, value) { linkAttrs[name] = value; }, addEventListener() {}, querySelectorAll() { return [image, pixel]; } };
+  const node = { hidden: true, innerHTML: '', getAttribute: name => attrs[name] || null, setAttribute(name, value) { attrs[name] = value; }, querySelectorAll() { return [link]; } };
+  const document = { readyState: 'loading', visibilityState: 'visible', addEventListener(name, fn) { docHandlers[name] = fn; }, querySelectorAll() { return [node]; } };
+  class Observer { constructor(fn) { observerCallback = fn; } observe() {} unobserve() {} }
+  const navigator = { doNotTrack: '0', globalPrivacyControl: false };
+  const window = { gtag(...args) { calls.push(args); } };
+  vm.runInNewContext(source, { window, document, navigator, IntersectionObserver: Observer, WeakMap, WeakSet,
+    setTimeout(fn, delay) { const id = ++nextTimer; timers.set(id, { at: now + delay, fn }); return id; }, clearTimeout(id) { timers.delete(id); } });
+  window.PD_AFF_render(document);
+  return {
+    views: () => calls.filter(call => call[1] === 'affiliate_view').length,
+    enter(ratio = 0.5) { observerCallback([{ target: link, isIntersecting: ratio > 0, intersectionRatio: ratio }]); },
+    advance(ms) { now += ms; for (const [id, timer] of [...timers]) if (timer.at <= now) { timers.delete(id); timer.fn(); } },
+    visibility(value) { document.visibilityState = value; docHandlers.visibilitychange?.(); },
+    load() { image.complete = true; image.naturalWidth = 300; imageHandlers.load?.(); },
+    detach() { link.isConnected = false; },
+    disableAnalytics() { navigator.globalPrivacyControl = true; },
+  };
+}
+
+test('visible loaded creative needs one uninterrupted second and sends only once', () => {
+  const f = viewFixture(); f.enter(); f.advance(999); assert.equal(f.views(), 0);
+  f.advance(1); assert.equal(f.views(), 1); f.enter(); f.advance(2000); assert.equal(f.views(), 1);
+});
+test('background tab cancels the pending view and visible return starts a fresh second', () => {
+  const f = viewFixture(); f.enter(); f.advance(600); f.visibility('hidden'); f.advance(2000); assert.equal(f.views(), 0);
+  f.visibility('visible'); f.advance(999); assert.equal(f.views(), 0); f.advance(1); assert.equal(f.views(), 1);
+});
+test('creative loading starts a full second only after its pixels are available', () => {
+  const f = viewFixture({ loaded: false }); f.enter(); f.advance(2000); assert.equal(f.views(), 0);
+  f.load(); f.advance(999); assert.equal(f.views(), 0); f.advance(1); assert.equal(f.views(), 1);
+});
+test('broken creative and detached cards never fabricate a view', () => {
+  const broken = viewFixture({ broken: true }); broken.enter(); broken.advance(2000); assert.equal(broken.views(), 0);
+  const detached = viewFixture(); detached.enter(); detached.detach(); detached.advance(2000); assert.equal(detached.views(), 0);
+});
+test('less than half-visible time cannot complete a continuous view', () => {
+  const f = viewFixture(); f.enter(); f.advance(600); f.enter(0.49); f.advance(2000); assert.equal(f.views(), 0);
+  f.enter(); f.advance(1000); assert.equal(f.views(), 1);
+});
+test('pending ASP pixel does not block a visible loaded creative diagnostic', () => {
+  const f = viewFixture({ pixelPending: true }); f.enter(); f.advance(1000); assert.equal(f.views(), 1);
+});
+test('privacy changes during the timer prevent a view', () => {
+  const f = viewFixture(); f.enter(); f.disableAnalytics(); f.advance(1000); assert.equal(f.views(), 0);
+});

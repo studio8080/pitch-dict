@@ -1,6 +1,21 @@
 {
-  "modified": "2026-11-16",
+  "modified": "2026-11-24",
   "entries": [
+    {
+      "date": "2026-11-24",
+      "ja": {
+        "title": "ニアサイドとファーサイドの違いを追記しました",
+        "items": [
+          "日本語の用語ページに、クロスを上げるサイドが変わるとニアポストとファーポストが入れ替わる例を追加しました。"
+        ]
+      },
+      "en": {
+        "title": "Near and far post example added to the Japanese glossary",
+        "items": [
+          "The Japanese entry now explains how the near and far posts switch when a cross comes from the opposite side."
+        ]
+      }
+    },
     {
       "date": "2026-11-16",
       "ja": {

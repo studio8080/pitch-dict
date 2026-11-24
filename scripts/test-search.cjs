@@ -65,6 +65,7 @@ test('all generated term pages preserve canonical/hreflang, readable definitions
     const oldDate=jsonld(before).find(o=>o['@type']==='Article').dateModified;
     const newDate=objects.find(o=>o['@type']==='Article').dateModified;
     if(lang==='ja'&&['arrow','wallpass'].includes(term.id))assert.equal(newDate,'2026-11-11');
+    else if(lang==='ja'&&term.id==='nearfar')assert.equal(newDate,'2026-11-24');
     else assert.equal(newDate,oldDate,'unrelated content date changed: '+relative);
   }
 });

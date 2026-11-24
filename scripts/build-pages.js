@@ -182,7 +182,11 @@ let lastmod = today;
 try { lastmod = execSync("git log -1 --format=%cs -- index.html", { cwd: ROOT }).toString().trim() || today; } catch (_) {}
 
 // UI/search fixes do not revise every term's explanation. Preserve its known content date.
-const CONTENT_UPDATED = { "terms/arrow": "2026-11-11", "terms/wallpass": "2026-11-11" };
+const CONTENT_UPDATED = {
+  "terms/arrow": "2026-11-11",
+  "terms/wallpass": "2026-11-11",
+  "terms/nearfar": "2026-11-24"
+};
 const previousMeta = new Map();
 for (const rel of ["terms", "en", "en/terms", "updates", "en/updates", ...TERMS.flatMap(t=>["terms/"+t.id,"en/terms/"+t.id])]) {
   const file=path.join(ROOT,rel,"index.html");
@@ -372,6 +376,10 @@ function termPage(t, lang) {
       desc: 'Volante is Portuguese for "steering wheel": a defensive midfielder at the base of midfield who steers attack and defence. See the position on an animated board.'
     }
   }[t.id] : {
+    nearfar: {
+      title: 'サッカーのニアサイドとファーサイドの違い｜ポストの位置を図解',
+      desc: 'クロスを上げる選手から見て、手前のゴールポスト側がニア、奥の側がファーです。クロスを上げるサイドが変わるとニアとファーも入れ替わります。動く戦術ボードで位置関係を確認できます。'
+    },
     wallpass: {
       title: 'サッカーのワンツーとは？壁パスの動きと使い方を図解｜ピッチの辞書',
       desc: 'サッカーのワンツー（壁パス）は、味方へパスを出し、走りながらリターンを受ける2人の連係です。パスを出す→走る→返してもらう動きと、3人目の動きとの違いを、動く戦術ボードで解説します。'
@@ -469,7 +477,8 @@ function termPage(t, lang) {
     <section class="tstep">
       <h2><span class="snum">1</span>${esc(I18N[lang].m1)}</h2>
       <p class="tcatch">${catchOf(t, lang)}</p>${t.id === "wallpass" && lang === "ja" ? `
-      <h3>ワンツーと壁パスは同じ意味？</h3><p>同じ2人の連係を指します。パスを出した選手がすぐに前へ走り、味方からのリターンを受けます。ボールを受けるのが別の選手になる<a href="/terms/thirdman/">「3人目の動き」</a>とは区別します。</p>` : ""}
+      <h3>ワンツーと壁パスは同じ意味？</h3><p>同じ2人の連係を指します。パスを出した選手がすぐに前へ走り、味方からのリターンを受けます。ボールを受けるのが別の選手になる<a href="/terms/thirdman/">「3人目の動き」</a>とは区別します。</p>` : ""}${t.id === "nearfar" && lang === "ja" ? `
+      <h3>クロスでは、どちらのポストがニア？</h3><p><a href="/terms/cross/">クロス</a>を上げる選手に近いゴールポストがニアポスト、遠いゴールポストがファーポストです。選手が反対のサイドからクロスを上げると、ニアとファーも入れ替わります。</p>` : ""}
     </section>
 
     <section class="tstep">

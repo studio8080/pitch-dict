@@ -125,7 +125,9 @@ function prepareFrame({ svg, width, depth, paint }, copy, callbacks, play) {
   const ballPiece = play && pieces.find(piece => piece.kind === 'ball');
   for (const piece of pieces) {
     piece.key = `${piece.x},${piece.y}`;
-    piece.track = piece === ballPiece ? play.ball : play?.players?.[piece.key];
+    piece.track = piece.kind === 'ball'
+      ? (piece === ballPiece ? play.ball : play?.additionalBalls?.[piece.key])
+      : play?.players?.[piece.key];
     piece.group.classList.add('pb-piece');
     if (piece.track) piece.group.classList.add('pb-tracked');
   }
@@ -208,7 +210,7 @@ function prepareFrame({ svg, width, depth, paint }, copy, callbacks, play) {
       const kick = player && play?.kicks ? kickAt(play, key, phase) : null;
       const heading = kick?.heading ?? play?.face?.[key];
       if (track) {
-        const [pitchX, pitchY, lift = 0] = sampleTrack(track, phase, player, player ? undefined : play.cuts);
+        const [pitchX, pitchY, lift = 0] = sampleTrack(track, phase, player, play.cuts);
         if (player) group.style.setProperty('--pb-track-shift', `translate(${pitchX - x}px,${pitchY - y}px)`);
         move(pitchX, pitchY, 1, elapsed, still, lift, heading, kick?.strike);
         continue;

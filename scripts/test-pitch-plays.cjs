@@ -21,7 +21,7 @@ function glossaryBoards(language) {
 test('authored motion targets real players in both language editions and stays on the pitch', () => {
   const editions = ['ja', 'en'].map(glossaryBoards);
   for (const [key, play] of Object.entries(plays)) {
-    const tracks = [play.ball, ...Object.values(play.players || {})];
+    const tracks = [play.ball, ...Object.values(play.players || {}), ...Object.values(play.additionalBalls || {})];
     for (const track of tracks) {
       assert.equal(track[0][0], 0, key);
       assert.ok(track.every(([at, x, y, lift = 0], index) => {
@@ -36,6 +36,9 @@ test('authored motion targets real players in both language editions and stays o
         .map(([, x, y]) => x + ',' + y));
       const actors = [...Object.keys(play.players || {}), ...Object.keys(play.face || {}), ...(play.kicks || []).map(([, player]) => player)];
       assert.ok(actors.every(actor => roster.has(actor)), `${key}: missing actor`);
+      const balls = [...svg.matchAll(/<circle cx="(\d+)" cy="(\d+)"[^>]+fill="url\(#gBall\)"/g)]
+        .slice(1).map(([, x, y]) => x + ',' + y);
+      assert.ok(Object.keys(play.additionalBalls || {}).every(ball => balls.includes(ball)), `${key}: missing ball`);
     }
     for (const [at, actor] of play.kicks || []) {
       const [x, y] = play.players?.[actor] ? sampleTrack(play.players[actor], at, true) : actor.split(',').map(Number);
@@ -76,6 +79,17 @@ test('defensive actions keep the timing at the point of the pass or recovery', (
   assert.equal(new Set(Object.values(trap.players).map(track => sampleTrack(track, kick, true)[0])).size, 1);
   assert.ok(sampleTrack(trap.players['430,90'], kick, true)[0] < 380);
   assert.deepEqual(sampleTrack(trap.ball, kick).slice(0, 2), [295, 288]);
+});
+
+test('offside examples compare the receiver at release, and each counter has its own ball', () => {
+  const offside = plays.offside;
+  const [earlyKick, lateKick] = offside.kicks.map(([at]) => at);
+  assert.ok(sampleTrack(offside.players['510,150'], earlyKick, true)[0] > 460);
+  assert.ok(sampleTrack(offside.players['430,300'], lateKick, true)[0] < 460);
+  assert.ok(sampleTrack(offside.players['430,300'], .86, true)[0] > 460);
+  const counter = plays.counter;
+  assert.ok(sampleTrack(counter.ball, .55)[0] < 400);
+  assert.deepEqual(sampleTrack(counter.additionalBalls['390,120'], .55).slice(0, 2), [550, 129]);
 });
 
 test('reduced motion holds a meaningful frame and separate examples cut back without a reverse pass', () => {

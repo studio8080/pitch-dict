@@ -11,6 +11,7 @@
 .pb-stage[data-pb-state="ready"] .pb-stage-status{display:none}
 .pb-stage:not([data-pb-state="ready"]) canvas,.pb-stage:not([data-pb-state="ready"]) .pb-plane{visibility:hidden}
 .pb-paint,.pb-piece>:not(.pb-label),.pb-inline-caption{opacity:0!important}
+.pb-tracked{animation:none!important;transform:var(--pb-track-shift,none)}
 .pb-type{transform-box:view-box;transform-origin:0 0;transform:var(--pb-anchor) var(--pb-lettering) var(--pb-nudge,translate(0,0)) var(--pb-unanchor)}
 .pb-type.pb-label{transform:var(--pb-anchor) var(--pb-lettering) translateY(var(--pb-label-lift)) var(--pb-unanchor)}
 .pb-type>text:not(.pb-inline-caption){font-size:var(--pb-font);stroke-width:2.65px}

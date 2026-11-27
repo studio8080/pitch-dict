@@ -3800,9 +3800,12 @@ window.openVizZoom=function(e){
   view.className="vz-content";
   view.dataset.vizKey=source.dataset.vizKey;
   if(source.dataset.pbCamera)view.dataset.pbStartCamera=source.dataset.pbCamera;
-  view.dataset.paused=String(source.hasAttribute("data-pb-stop"));
   view.innerHTML=trViz(draw());
-  if(view.querySelector('svg > rect[fill^="url(#m"][fill$="g)"]'))view.dataset.pbExpanded="";
+  if(view.querySelector('svg > rect[fill^="url(#m"][fill$="g)"]')){
+    view.dataset.pbExpanded="";
+    view.dataset.pbStartPaused=String(source.hasAttribute("data-pb-stop"));
+    if(source.dataset.pbPlayTime)view.dataset.pbStartTime=source.dataset.pbPlayTime;
+  }
   vzinner.replaceChildren(view);
   source.dataset.paused="true";
   vzScale=1;vzX=0;vzY=0;vzApply();
@@ -4026,6 +4029,6 @@ function applyLang(l){
 <!-- koko-ask-chatgpt -->
 <script src="/ask-chatgpt.js?v=3" data-product="pitch" defer></script>
 <script src="/polish.js?v=20261127" defer></script>
-<script src="/pitch-board.js?v=2" defer></script>
+<script src="/pitch-board.js?v=3" defer></script>
 </body>
 </html>

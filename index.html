@@ -535,7 +535,8 @@ html[data-theme="dark"] .watchterms a:hover,html[data-theme="dark"] .watchterms 
   display:flex;align-items:center;justify-content:center;
 }
 .vzinner.grab{cursor:grabbing}
-.vzinner svg{width:100%;height:auto;display:block;transform-origin:center center;will-change:transform}
+.vzinner svg{width:100%;height:auto;display:block}
+.vz-content{width:100%;transform-origin:center center;will-change:transform}
 .vzclose{
   position:fixed;top:16px;right:18px;z-index:3;width:48px;height:48px;border-radius:50%;
   background:#fff;border:2.5px solid #12203C;color:#12203C;font-size:20px;font-weight:900;cursor:pointer;
@@ -3715,7 +3716,7 @@ function openModal(id){
      </div>
      <div class="step">
        <span class="slabel"><span class="snum">2</span>${t.id==="apt"?(en?"📊 An illustrated calculation":"📊 計算例を図で見る"):L.m2}</span>
-       <div class="viz" id="vizbox">${trViz(VIZ[t.viz]())}<button class="vizzoombtn" type="button" onclick="openVizZoom(event)" aria-label="${L.vzoomBtn}">🔍 ${L.zoom}</button></div>
+       <div class="viz" id="vizbox" data-viz-key="${t.viz}">${trViz(VIZ[t.viz]())}<button class="vizzoombtn" type="button" onclick="openVizZoom(event)" aria-label="${L.vzoomBtn}">🔍 ${L.zoom}</button></div>
      </div>
      <div class="step">
        <span class="slabel"><span class="snum">3</span>${L.m3}</span>
@@ -3789,16 +3790,23 @@ window.addEventListener("hashchange",openFromHash);
 /* ===== 戦術ボード拡大（ライトボックス／ズーム＆パン） ===== */
 const vzoom=document.getElementById("vzoom"), vzinner=document.getElementById("vzinner");
 let vzScale=1,vzX=0,vzY=0,vzDrag=false,vzSX=0,vzSY=0;
-function vzApply(){const s=vzinner.querySelector("svg");if(s)s.style.transform=`translate(${vzX}px,${vzY}px) scale(${vzScale})`;}
+function vzApply(){const view=vzinner.querySelector(".vz-content");if(view)view.style.transform=`translate(${vzX}px,${vzY}px) scale(${vzScale})`;}
 window.openVizZoom=function(e){
   if(e&&e.stopPropagation)e.stopPropagation();
-  const src=document.querySelector("#vizbox svg");if(!src)return;
-  vzinner.innerHTML=src.outerHTML;
+  const source=document.getElementById("vizbox"), draw=VIZ[source?.dataset.vizKey];if(!draw)return;
+  const view=document.createElement("div");
+  view.className="vz-content";
+  view.dataset.startView=source.dataset.pbView||"3d";
+  view.dataset.paused=String(source.hasAttribute("data-pb-stop"));
+  view.innerHTML=trViz(draw());
+  vzinner.replaceChildren(view);
+  source.dataset.paused="true";
   vzScale=1;vzX=0;vzY=0;vzApply();
   vzoom.classList.add("open");document.body.style.overflow="hidden";
 };
 window.closeVizZoom=function(){
   vzoom.classList.remove("open");vzinner.innerHTML="";
+  document.getElementById("vizbox")?.removeAttribute("data-paused");
   document.body.style.overflow=mback.classList.contains("open")?"hidden":"";
 };
 window.vzZoom=function(d){vzScale=Math.min(6,Math.max(1,+(vzScale+d).toFixed(2)));if(vzScale===1){vzX=0;vzY=0;}vzApply();};
@@ -4014,5 +4022,6 @@ function applyLang(l){
 <!-- koko-ask-chatgpt -->
 <script src="/ask-chatgpt.js?v=3" data-product="pitch" defer></script>
 <script src="/polish.js?v=20261111" defer></script>
+<script src="/pitch-board.js?v=1" defer></script>
 </body>
 </html>

@@ -1,0 +1,11 @@
+{
+  "name": "pitch-dict",
+  "private": true,
+  "scripts": {
+    "build:board": "node scripts/build-pitch-board.cjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "three": "0.186.1"
+  }
+}

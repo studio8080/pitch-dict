@@ -244,7 +244,10 @@ const ogImage = (lang) => (lang === "en" ? "og-en.png" : "og-v2.png");
 // iOSアプリ（日本のApp Storeのみで配信中）への Safari スマートバナー。英語ページには出さない。
 const APP_BANNER = '<meta name="apple-itunes-app" content="app-id=6794986070">\n';
 
-function head({ lang, title, desc, url, altUrl, altPath, jsonld, ogType = "article", includeAds = true, includeVizControls = false }) {
+const pitchLoader = '<script src="/pitch-board.js?v=1" defer></script>';
+const hasPitch = svg => /<rect\b[^>]*fill="url\(#m\d+g\)"/.test(svg);
+
+function head({ lang, title, desc, url, altUrl, altPath, jsonld, ogType = "article", includeAds = true, includeVizControls = false, includePitchBoard = false }) {
   const u = UI[lang];
   const jaUrl = lang === "ja" ? url : altUrl;
   const enUrl = lang === "en" ? url : altUrl;
@@ -289,7 +292,7 @@ ${adsClient && includeAds ? `<!-- Google AdSense -->
 <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&family=Oswald:wght@600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/terms.css?v=${today.replace(/-/g, "")}">
 <link rel="stylesheet" href="/polish.css?v=20261111b">
-${includeVizControls ? '<link rel="stylesheet" href="/viz-controls.css?v=20261116">\n<script src="/viz-controls.js?v=20261116" defer></script>\n' : ''}\
+${includeVizControls ? '<link rel="stylesheet" href="/viz-controls.css?v=20261116">\n<script src="/viz-controls.js?v=20261116" defer></script>\n' : ''}${includePitchBoard ? pitchLoader + '\n' : ''}\
 </head>
 <body>
 ${sharedDefs}
@@ -418,6 +421,7 @@ function termPage(t, lang) {
   const i = sib.findIndex((x) => x.id === t.id);
   const prev = sib[(i - 1 + sib.length) % sib.length], next = sib[(i + 1) % sib.length];
   const svg = vizFor(t, lang);
+  const pitchBoard = hasPitch(svg);
   const animatedViz = [...svg.matchAll(/\bclass=["']([^"']*)["']/g)].some(match =>
     match[1].split(/\s+/).some(name => ['mv', 'mv2', 'pulse', 'dash', 'fadein', 'blinkel'].includes(name)));
 
@@ -462,7 +466,7 @@ function termPage(t, lang) {
     ? `<strong>${esc(sn)}とは</strong>、${esc(one)}`
     : `<strong>${esc(sn)}</strong> — ${esc(one)}`;
 
-  return head({ lang, title, desc, url, altUrl, altPath, jsonld, includeVizControls: animatedViz }) + `
+  return head({ lang, title, desc, url, altUrl, altPath, jsonld, includeVizControls: animatedViz, includePitchBoard: pitchBoard }) + `
 <main class="wrap tmain">
   <nav class="crumb" aria-label="${lang === "ja" ? "パンくず" : "Breadcrumb"}"><a href="${homePath(lang)}">${esc(u.crumbHome)}</a> › <a href="${indexPath(lang)}">${esc(u.crumbGlossary)}</a> › <a href="${indexPath(lang)}#cat-${t.cat}">${esc(catName(t.cat, lang))}</a> › <span>${esc(sn)}</span></nav>
 
@@ -483,7 +487,7 @@ function termPage(t, lang) {
 
     <section class="tstep">
       <h2><span class="snum">2</span>${esc(t.id === "apt" ? (lang === "ja" ? "📊 計算例を図で見る" : "📊 An illustrated calculation") : I18N[lang].m2)}</h2>
-      <div class="viz"${animatedViz ? ' id="term-viz" data-viz-controls' : ''}>${svg}</div>
+      <div class="viz"${animatedViz ? ' id="term-viz" data-viz-controls' : ''}${pitchBoard ? ' data-pitch-board' : ''}>${svg}</div>
       <p class="vizcap">${esc(t.id === "apt" ? (lang === "ja" ? "計算例：100分 − 中断40分 ＝ APT60分。各ハーフの最後に追加する時間とは別です。実際の試合成績ではありません。" : "Example: 100 elapsed minutes − 40 minutes of stoppages = 60 minutes APT. This is time in play, not added time. These are illustrative figures, not match statistics.") : u.vizCap)}</p>
       <p class="tapp"><a class="tbtn" href="${lang === "ja" ? "/#" + t.id : "/?lang=en#" + t.id}">${esc(u.appBtn(TERMS.length - 1))}</a></p>
     </section>
@@ -870,6 +874,27 @@ if (process.argv.includes("--ad-placements-only")) {
   if (!withoutAdCss.includes(".affslot{")) throw new Error("広告用CSSの挿入位置がありません");
   fs.writeFileSync(cssFile, withoutAdCss.replace(".affslot{", TERM_AD_CSS + "\n.affslot{"));
   console.log(`✅ 日英${TERMS.length * 2}用語ページの広告枠とCSSのみを更新しました（本文・日付は保持）。`);
+  process.exit(0);
+}
+
+// Ship just the progressive enhancement to existing term pages, preserving their copy and dates.
+if (process.argv.includes('--pitch-board-only')) {
+  let count = 0;
+  for (const lang of ['ja', 'en']) {
+    for (const term of TERMS) {
+      const file = path.join(ROOT, lang === 'ja' ? 'terms' : 'en/terms', term.id, 'index.html');
+      const previous = fs.readFileSync(file, 'utf8');
+      if (!hasPitch(previous)) continue;
+      const eol = previous.includes('\r\n') ? '\r\n' : '\n';
+      const html = previous
+        .replace(/^<script src="\/pitch-board\.js\?v=[^"]+" defer><\/script>\r?\n/gm, '')
+        .replace('</head>', `${pitchLoader}${eol}</head>`)
+        .replace(/<div class="viz"([^>]*?)(?: data-pitch-board)?>/, '<div class="viz"$1 data-pitch-board>');
+      if (html !== previous) fs.writeFileSync(file, html);
+      count++;
+    }
+  }
+  console.log(`3D pitch enhancement: ${count} term pages`);
   process.exit(0);
 }
 

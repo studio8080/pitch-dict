@@ -793,6 +793,7 @@ html[data-theme="dark"] .rel button{background:#0E1E3A;color:#7CCBFF;border-colo
 html[data-theme="dark"] .rel button:hover{background:#12294A}
 </style>
 <link rel="stylesheet" href="/polish.css?v=20261111b">
+<link rel="stylesheet" href="/pitch-interface.css?v=2">
 </head>
 <body>
 
@@ -892,7 +893,8 @@ html[data-theme="dark"] .rel button:hover{background:#12294A}
     </div>
     <div class="hero-demo" id="heroDemo">
       <div class="hero-demo-heading"><h2 id="heroDemoLabel">動く図解を、試してみよう。</h2><button id="heroMotion" type="button" aria-pressed="false">動きを止める</button></div>
-      <button class="hero-board-button" id="heroExpand" type="button" aria-label="ハイプレスの図解を大きく見る"><span class="viz hero-viz" id="heroViz"></span></button>
+      <div class="viz hero-viz" id="heroViz"></div>
+      <button class="hero-board-open" id="heroExpand" type="button">図解を大きく見る</button>
       <noscript><p>図解は<a href="/terms/press/">ハイプレスの用語ページ</a>でも読めます。</p></noscript>
       <div class="hero-demo-caption"><div><h3 id="heroTerm">ハイプレス</h3><p id="heroMeaning">敵陣の深い位置から、集団でボールを奪いに行く守備。</p><a id="heroMore" href="/terms/press/">この用語を詳しく →</a></div><img class="hero-mascot" src="/mascotc.webp" alt="実況ボールくん" width="92" height="87" decoding="async"></div>
       <div class="hero-choices" role="group" aria-label="図解の用語を選ぶ"><button type="button" data-hero-term="press" aria-pressed="true">ハイプレス</button><button type="button" data-hero-term="wallpass" aria-pressed="false">ワンツー</button><button type="button" data-hero-term="offside" aria-pressed="false">オフサイド</button></div>
@@ -3698,7 +3700,7 @@ function openModal(id){
   modal.innerHTML=`
    <div class="mhead">
      <span class="memoji">${EMOJI[t.id]||"⚽"}</span>
-     <span class="cat" style="color:${c.d}">${catLabel(t.cat)}　<span style="color:#8A97AF">${L.lvl[t.lvl]}</span></span>
+     <span class="cat" style="--cc:${c.col};color:${c.d}">${catLabel(t.cat)}　<span style="color:#8A97AF">${L.lvl[t.lvl]}</span></span>
      <h2>${nm}</h2>
      <span class="en">${esc(sub)}</span>
      <button class="close" onclick="closeModal()" aria-label="${L.mClose}">✕</button>
@@ -3796,9 +3798,11 @@ window.openVizZoom=function(e){
   const source=document.getElementById("vizbox"), draw=VIZ[source?.dataset.vizKey];if(!draw)return;
   const view=document.createElement("div");
   view.className="vz-content";
-  view.dataset.startView=source.dataset.pbView||"3d";
+  view.dataset.vizKey=source.dataset.vizKey;
+  if(source.dataset.pbCamera)view.dataset.pbStartCamera=source.dataset.pbCamera;
   view.dataset.paused=String(source.hasAttribute("data-pb-stop"));
   view.innerHTML=trViz(draw());
+  if(view.querySelector('svg > rect[fill^="url(#m"][fill$="g)"]'))view.dataset.pbExpanded="";
   vzinner.replaceChildren(view);
   source.dataset.paused="true";
   vzScale=1;vzX=0;vzY=0;vzApply();
@@ -3812,8 +3816,8 @@ window.closeVizZoom=function(){
 window.vzZoom=function(d){vzScale=Math.min(6,Math.max(1,+(vzScale+d).toFixed(2)));if(vzScale===1){vzX=0;vzY=0;}vzApply();};
 window.vzReset=function(){vzScale=1;vzX=0;vzY=0;vzApply();};
 vzoom.addEventListener("click",e=>{if(e.target===vzoom)closeVizZoom()});
-vzinner.addEventListener("wheel",e=>{e.preventDefault();vzZoom(e.deltaY<0?0.25:-0.25);},{passive:false});
-vzinner.addEventListener("pointerdown",e=>{if(vzScale<=1)return;vzDrag=true;vzSX=e.clientX-vzX;vzSY=e.clientY-vzY;vzinner.classList.add("grab");try{vzinner.setPointerCapture(e.pointerId)}catch(_){}} );
+vzinner.addEventListener("wheel",e=>{if(vzinner.querySelector('[data-pb-expanded]'))return;e.preventDefault();vzZoom(e.deltaY<0?0.25:-0.25);},{passive:false});
+vzinner.addEventListener("pointerdown",e=>{if(vzScale<=1||vzinner.querySelector('[data-pb-expanded]'))return;vzDrag=true;vzSX=e.clientX-vzX;vzSY=e.clientY-vzY;vzinner.classList.add("grab");try{vzinner.setPointerCapture(e.pointerId)}catch(_){}} );
 vzinner.addEventListener("pointermove",e=>{if(!vzDrag)return;vzX=e.clientX-vzSX;vzY=e.clientY-vzSY;vzApply();});
 function vzEnd(){vzDrag=false;vzinner.classList.remove("grab");}
 vzinner.addEventListener("pointerup",vzEnd);
@@ -4021,7 +4025,7 @@ function applyLang(l){
 <script src="/affiliates.js?v=20261111b" defer></script>
 <!-- koko-ask-chatgpt -->
 <script src="/ask-chatgpt.js?v=3" data-product="pitch" defer></script>
-<script src="/polish.js?v=20261111" defer></script>
-<script src="/pitch-board.js?v=1" defer></script>
+<script src="/polish.js?v=20261127" defer></script>
+<script src="/pitch-board.js?v=2" defer></script>
 </body>
 </html>

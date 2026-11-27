@@ -200,4 +200,4 @@ iOSアプリ（別リポジトリ `pitch-app`）は `scripts/build-data.js` で�
 アプリは日本の App Store でしか配信していないので、英語ページには入れない。配信国を広げたら英語ページにも足す。
 ## 3D戦術ボードの更新
 
-`npm ci` の後に `npm run build:board` を実行すると、`src/pitch-board.js` とシーンからブラウザ用の `assets/pitch-board-3d.js` を生成します。iOS版にも反映するときは `npm run build:board -- <iOSアプリのルート>` で同じ描画コードをiOS版の同梱JSONへ出力します。既存の図を使って用語ページの表示を更新する場合は `node scripts/build-pages.js --pitch-board-only` を実行します。
+`npm ci` の後に `npm run build:board` を実行すると、`src/pitch-board.js` とシーンからブラウザ用の `assets/pitch-board-3d.js` を生成します。iOS版にも反映するときは `npm run build:board -- <iOSアプリのルート>` で同じ描画コードをiOS版の同梱JSONへ出力します。既存用語を保持して3Dボードと共通スタイルの参照を更新する場合は `node scripts/build-pages.js --pitch-board-only` を実行します。

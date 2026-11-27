@@ -26,11 +26,14 @@
   function selectTerm(id){
     const term=TERMS.find(t=>t.id===id);if(!term||!VIZ[term.viz])return;
     selected=id;
-    document.getElementById('heroViz').innerHTML=trViz(VIZ[term.viz]());
+    const diagram=document.getElementById('heroViz');
+    diagram.dataset.vizKey=term.viz;
+    diagram.innerHTML=trViz(VIZ[term.viz]());
     document.getElementById('heroTerm').textContent=english()?term.en:shortTermName(term);
     document.getElementById('heroMeaning').textContent=english()?TR_EN[id].one:term.one;
     const more=document.getElementById('heroMore');more.href=(english()?'/en/terms/':'/terms/')+id+'/';more.textContent=english()?'Read the explanation →':'この用語を詳しく →';
     document.getElementById('heroExpand').setAttribute('aria-label',(english()?term.en:shortTermName(term))+(english()?' diagram: open larger':'の図解を大きく見る'));
+    document.getElementById('heroExpand').textContent=english()?'Open larger diagram':'図解を大きく見る';
     document.getElementById('heroDemoLabel').textContent=english()?'Try an animated explanation.':'動く図解を、試してみよう。';
     document.querySelectorAll('[data-hero-term]').forEach(button=>{
       const t=TERMS.find(t=>t.id===button.dataset.heroTerm);button.setAttribute('aria-pressed',String(t.id===selected));button.textContent=english()?t.en:shortTermName(t);

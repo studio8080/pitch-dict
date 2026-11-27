@@ -4,6 +4,23 @@
     {
       "date": "2026-11-27",
       "ja": {
+        "title": "32種類の図解で選手とボールの動きを合わせました",
+        "items": [
+          "ワンツーで走り込んでパスを受ける流れや、スルーパスでボールが空いた場所へ先に入る様子を見られます。クロスの浮き球や、カットバックの折り返しも描き分けました。",
+          "戦術ボードを止めて拡大すると、同じ場面から見直せます。停止中も視点を変えられます。"
+        ]
+      },
+      "en": {
+        "title": "See players and the ball move together in 32 diagrams",
+        "items": [
+          "Follow the runner receiving a return pass in a one-two, or watch a through ball reach open space before the runner. High crosses and cutbacks now follow distinct paths.",
+          "Pause a tactics board and open the enlarged view to inspect the same moment. You can also move the camera while play is paused."
+        ]
+      }
+    },
+    {
+      "date": "2026-11-27",
+      "ja": {
         "title": "戦術ボードを回せる3Dに更新しました",
         "items": [
           "ピッチ図解のある96語を3Dで表示します。選手の走り方とボールの動きを見ながら、「視点操作」でピッチを回転したり、高さや拡大率を変えたりできます。",

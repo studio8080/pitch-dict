@@ -10,7 +10,7 @@
     if (!renderer) {
       renderer = new Promise((resolve, reject) => {
         const script = document.createElement('script');
-        script.src = '/assets/pitch-board-3d.js?v=1';
+        script.src = '/assets/pitch-board-3d.js?v=2';
         script.onload = () => resolve(window.PitchBoard);
         script.onerror = reject;
         document.head.append(script);
@@ -27,19 +27,20 @@
       loadRenderer().then(board => {
         if (records.get(host) !== record || !host.contains(record.svg)) return;
         const hero = host.id === 'heroViz';
-        const zoom = host.classList.contains('vz-content');
         const heroPanel = document.getElementById('heroDemo');
         const playback = host.nextElementSibling;
+        let camera;
+        try { camera = JSON.parse(host.dataset.pbStartCamera || record.camera || 'null'); } catch {}
         record.controller = board?.mount(host, {
           lang: document.documentElement.lang,
-          anchor: hero ? document.getElementById('heroExpand') : host,
+          anchor: host,
           inside: playback?.matches('.viz-controls') ? playback : null,
           motionHost: hero ? heroPanel : host,
           withPause: host.id === 'vizbox' && !!host.querySelector('.mv,.mv2,.pulse,.dash,.fadein,.blinkel'),
-          view: zoom ? host.dataset.startView : record.view,
-          controls: !zoom,
+          camera,
         });
-      }).catch(() => {}); // The original diagram stays available if 3D can't load.
+        if (!record.controller) showError(host);
+      }).catch(() => { if (records.get(host) === record) showError(host); });
     }
   });
 
@@ -48,7 +49,7 @@
     const views = new Map();
     for (const [host, record] of records) {
       if (hosts.includes(host) && host.contains(record.svg)) continue;
-      views.set(host, host.dataset.pbView);
+      views.set(host, host.dataset.pbCamera);
       visibility.unobserve(host);
       record.controller?.destroy();
       records.delete(host);
@@ -57,9 +58,20 @@
       if (records.has(host)) continue;
       const svg = host.querySelector(part)?.ownerSVGElement;
       if (!svg) continue;
-      records.set(host, { svg, view: views.get(host) });
+      records.set(host, { svg, camera: views.get(host) });
       visibility.observe(host);
     }
+  }
+
+  function showError(host) {
+    host.dataset.pbView = 'error';
+    const error = document.createElement('span');
+    error.className = 'pb-load-error';
+    error.setAttribute('role', 'status');
+    error.textContent = document.documentElement.lang === 'en'
+      ? 'The 3D board could not load. Reload the page to try again.'
+      : '3Dボードを読み込めませんでした。ページを再読み込みしてください。';
+    host.append(error);
   }
 
   const changes = new MutationObserver(refresh);

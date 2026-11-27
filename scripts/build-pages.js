@@ -244,7 +244,11 @@ const ogImage = (lang) => (lang === "en" ? "og-en.png" : "og-v2.png");
 // iOSアプリ（日本のApp Storeのみで配信中）への Safari スマートバナー。英語ページには出さない。
 const APP_BANNER = '<meta name="apple-itunes-app" content="app-id=6794986070">\n';
 
-const pitchLoader = '<script src="/pitch-board.js?v=1" defer></script>';
+const pitchLoader = '<script src="/pitch-board.js?v=2" defer></script>';
+const interfaceLinks = [
+  '<link rel="stylesheet" href="/pitch-interface.css?v=2">',
+  '<script src="/pitch-interface.js?v=2" defer></script>',
+];
 const hasPitch = svg => /<rect\b[^>]*fill="url\(#m\d+g\)"/.test(svg);
 
 function head({ lang, title, desc, url, altUrl, altPath, jsonld, ogType = "article", includeAds = true, includeVizControls = false, includePitchBoard = false }) {
@@ -292,6 +296,7 @@ ${adsClient && includeAds ? `<!-- Google AdSense -->
 <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&family=Oswald:wght@600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/terms.css?v=${today.replace(/-/g, "")}">
 <link rel="stylesheet" href="/polish.css?v=20261111b">
+${interfaceLinks.join("\n")}
 ${includeVizControls ? '<link rel="stylesheet" href="/viz-controls.css?v=20261116">\n<script src="/viz-controls.js?v=20261116" defer></script>\n' : ''}${includePitchBoard ? pitchLoader + '\n' : ''}\
 </head>
 <body>
@@ -487,7 +492,7 @@ function termPage(t, lang) {
 
     <section class="tstep">
       <h2><span class="snum">2</span>${esc(t.id === "apt" ? (lang === "ja" ? "📊 計算例を図で見る" : "📊 An illustrated calculation") : I18N[lang].m2)}</h2>
-      <div class="viz"${animatedViz ? ' id="term-viz" data-viz-controls' : ''}${pitchBoard ? ' data-pitch-board' : ''}>${svg}</div>
+      <div class="viz"${animatedViz ? ' id="term-viz" data-viz-controls' : ''}${pitchBoard ? ` data-pitch-board data-viz-key="${t.viz}"` : ''}>${svg}</div>
       <p class="vizcap">${esc(t.id === "apt" ? (lang === "ja" ? "計算例：100分 − 中断40分 ＝ APT60分。各ハーフの最後に追加する時間とは別です。実際の試合成績ではありません。" : "Example: 100 elapsed minutes − 40 minutes of stoppages = 60 minutes APT. This is time in play, not added time. These are illustrative figures, not match statistics.") : u.vizCap)}</p>
       <p class="tapp"><a class="tbtn" href="${lang === "ja" ? "/#" + t.id : "/?lang=en#" + t.id}">${esc(u.appBtn(TERMS.length - 1))}</a></p>
     </section>
@@ -880,21 +885,27 @@ if (process.argv.includes("--ad-placements-only")) {
 // Ship just the progressive enhancement to existing term pages, preserving their copy and dates.
 if (process.argv.includes('--pitch-board-only')) {
   let count = 0;
-  for (const lang of ['ja', 'en']) {
-    for (const term of TERMS) {
-      const file = path.join(ROOT, lang === 'ja' ? 'terms' : 'en/terms', term.id, 'index.html');
-      const previous = fs.readFileSync(file, 'utf8');
-      if (!hasPitch(previous)) continue;
-      const eol = previous.includes('\r\n') ? '\r\n' : '\n';
-      const html = previous
-        .replace(/^<script src="\/pitch-board\.js\?v=[^"]+" defer><\/script>\r?\n/gm, '')
-        .replace('</head>', `${pitchLoader}${eol}</head>`)
-        .replace(/<div class="viz"([^>]*?)(?: data-pitch-board)?>/, '<div class="viz"$1 data-pitch-board>');
-      if (html !== previous) fs.writeFileSync(file, html);
-      count++;
-    }
+  const pages = new Map([
+    ...['terms', 'en', 'en/terms', 'updates', 'en/updates'].map(page => [page, null]),
+    ...TERMS.flatMap(term => [[`terms/${term.id}`, term.viz], [`en/terms/${term.id}`, term.viz]]),
+  ]);
+  for (const [page, viz] of pages) {
+    const file = path.join(ROOT, page, 'index.html');
+    const previous = fs.readFileSync(file, 'utf8');
+    const eol = previous.includes('\r\n') ? '\r\n' : '\n';
+    const links = [...interfaceLinks];
+    const pitch = viz && hasPitch(previous);
+    if (pitch) { links.push(pitchLoader); count++; }
+    let html = previous
+      .replace(/^<(?:link|script)\b[^\n]*\/pitch-(?:interface|board)\.(?:css|js)\?v=[^\n]*\r?\n/gm, '')
+      .replace('</head>', `${links.join(eol)}${eol}</head>`);
+    if (pitch) html = html.replace(/<div class="viz"([^>]*)>/, (match, attributes) => {
+      const base = attributes.replace(/ data-pitch-board\b| data-viz-key="[^"]*"/g, '');
+      return `<div class="viz"${base} data-pitch-board data-viz-key="${viz}">`;
+    });
+    if (html !== previous) fs.writeFileSync(file, html);
   }
-  console.log(`3D pitch enhancement: ${count} term pages`);
+  console.log(`Interface styles: ${pages.size} pages, including ${count} 3D pitch pages`);
   process.exit(0);
 }
 

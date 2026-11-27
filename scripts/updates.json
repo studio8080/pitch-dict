@@ -1,6 +1,23 @@
 {
-  "modified": "2026-11-24",
+  "modified": "2026-11-27",
   "entries": [
+    {
+      "date": "2026-11-27",
+      "ja": {
+        "title": "戦術ボードを回せる3Dに更新しました",
+        "items": [
+          "ピッチ図解のある96語を3Dで表示します。選手の走り方とボールの動きを見ながら、「視点操作」でピッチを回転したり、高さや拡大率を変えたりできます。",
+          "用語カードとスクロールバーを見直し、スマホ・タブレットのレイアウトと日英の用語ページのダークモードを改善しました。"
+        ]
+      },
+      "en": {
+        "title": "Explore tactics boards from different angles in 3D",
+        "items": [
+          "Pitch diagrams for 96 terms are now in 3D. Select Move camera to rotate the pitch, change the viewing angle, or zoom while watching the players and the ball.",
+          "We refreshed the glossary cards and scrollbars, improved the layout on phones and tablets, and updated dark mode on Japanese and English term pages."
+        ]
+      }
+    },
     {
       "date": "2026-11-24",
       "ja": {

@@ -92,7 +92,7 @@ export function createAthletes(scene, use, team, count) {
       let lastX, lastZ, phase = index * 0.71;
       let heading = team === 'blue' ? Math.PI * 0.48 : -Math.PI * 0.48;
 
-      return (x, z, opacity, elapsed, still) => {
+      return (x, z, opacity, elapsed, still, targetHeading, strike = 0) => {
         const dx = lastX === undefined ? 0 : x - lastX;
         const dz = lastZ === undefined ? 0 : z - lastZ;
         lastX = x;
@@ -100,12 +100,12 @@ export function createAthletes(scene, use, team, count) {
         const travel = Math.hypot(dx, dz);
         const moving = !still && travel > 0.07 && travel < 30;
         const effort = moving ? Math.min(1, travel * 26 / Math.max(16, elapsed)) : 0;
-        if (moving) {
-          const facing = Math.atan2(dx, dz);
+        if (moving || targetHeading !== undefined) {
+          const facing = targetHeading ?? Math.atan2(dx, dz);
           const turn = Math.atan2(Math.sin(facing - heading), Math.cos(facing - heading));
-          heading += turn * 0.42;
-          phase += travel * 0.34;
+          heading += turn * (strike > 0.35 ? 0.73 : 0.42);
         }
+        if (moving) phase += travel * 0.34;
         const gait = Math.sin(phase) * 0.93 * effort;
         root.position.set(x, 0, z);
         root.rotation.y = heading;
@@ -115,8 +115,9 @@ export function createAthletes(scene, use, team, count) {
         upper.rotation.z = Math.sin(phase) * 0.08 * effort;
         for (let i = 0; i < 2; i++) {
           const swing = i === 0 ? gait : -gait;
-          knees[i].rotation.x = 0.06 + swing;
-          shins[i].rotation.x = 0.11 + Math.max(0, -swing) * 1.13;
+          const shot = i === 1 ? strike : 0;
+          knees[i].rotation.x = 0.06 + swing * (1 - shot) - shot * 0.83;
+          shins[i].rotation.x = 0.11 + Math.max(0, -swing) * 1.13 * (1 - shot);
           arms[i].rotation.x = -0.22 - swing * 0.94;
           arms[i].rotation.z = i === 0 ? -0.11 : 0.11;
         }

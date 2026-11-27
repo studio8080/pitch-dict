@@ -1,14 +1,10 @@
 import { createScene, initialCamera } from './pitch-scene.js';
+import { kickAt, phaseAt, plays, sampleTrack } from './pitch-plays.mjs';
 import styles from './pitch-board.css';
 
 const SVG = 'http://www.w3.org/2000/svg';
 const MOTION = '(prefers-reduced-motion: reduce)';
 const MOVE = '.mv,.mv2,.fadein,.blinkel';
-const PASS_ROUTES = {
-  wallpass: [[0, 309, 248, 0], [0.13, 309, 248, 0], [0.45, 405, 218, 0], [0.52, 408, 217, 0], [0.86, 441, 193, 0], [1, 441, 193, 0]],
-  crossviz: [[0, 552, 328, 0], [0.14, 552, 328, 0], [0.30, 548, 274, 17], [0.47, 535, 212, 31], [0.65, 507, 162, 6], [0.76, 498, 156, 0], [1, 498, 156, 0]],
-  earlycross: [[0, 445, 348, 0], [0.14, 445, 348, 0], [0.31, 489, 295, 17], [0.48, 520, 233, 27], [0.67, 519, 159, 7], [0.79, 507, 151, 0], [1, 507, 151, 0]],
-};
 const COPY = {
   ja: { orbit: '視点操作', done: '視点操作を終了', reset: '視点を戻す', closer: '拡大', farther: '縮小', left: '左に回す', right: '右に回す', up: '視点を上げる', down: '視点を下げる', stage: '3D戦術ボード。ドラッグまたは矢印キーで視点を変更', pause: '動きを止める', play: '動きを再生', loading: '3D戦術ボードを読み込み中', failed: '3D戦術ボードを表示できませんでした。', retry: '再読み込み' },
   en: { orbit: 'Move camera', done: 'Done moving camera', reset: 'Reset view', closer: 'Zoom in', farther: 'Zoom out', left: 'Rotate left', right: 'Rotate right', up: 'Raise viewpoint', down: 'Lower viewpoint', stage: '3D tactical board. Drag or use the arrow keys to move the camera.', pause: 'Pause motion', play: 'Play motion', loading: 'Loading 3D tactical board', failed: 'The 3D tactical board could not be displayed.', retry: 'Retry' },
@@ -32,18 +28,6 @@ function getPieces(svg) {
       x: circle.cx.baseVal.value,
       y: circle.cy.baseVal.value,
     }));
-}
-
-function passPosition(route, timing) {
-  const animations = timing?.getAnimations?.() ?? [];
-  const motion = animations.find(animation => /^mv2?$/.test(animation.animationName));
-  const duration = motion?.effect?.getTiming().duration;
-  const phase = typeof duration === 'number' && duration > 0 ? (Number(motion.currentTime || 0) % duration) / duration : 0;
-  const index = Math.max(1, route.findIndex(([time]) => time >= phase));
-  const [start, ...from] = route[index - 1];
-  const [end, ...to] = route[index];
-  const progress = (phase - start) / (end - start);
-  return from.map((value, axis) => value + (to[axis] - value) * progress);
 }
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
@@ -118,7 +102,7 @@ function arrangeLabels(stage, labels, scale) {
   });
 }
 
-function prepareFrame({ svg, width, depth, paint }, copy, callbacks, route) {
+function prepareFrame({ svg, width, depth, paint }, copy, callbacks, play) {
   const stage = document.createElement('span');
   stage.className = 'pb-stage';
   stage.setAttribute('aria-label', copy.stage);
@@ -138,10 +122,14 @@ function prepareFrame({ svg, width, depth, paint }, copy, callbacks, route) {
   paint.forEach(element => element.classList.add('pb-paint'));
 
   const pieces = getPieces(svg);
-  pieces.forEach(({ group }) => group.classList.add('pb-piece'));
-  const passTiming = route && svg.querySelector('.mv,.mv2');
-  const ballPiece = route && pieces.find(piece => piece.kind === 'ball');
-  if (route && !ballPiece) pieces.push({ kind: 'ball', group: null });
+  const ballPiece = play && pieces.find(piece => piece.kind === 'ball');
+  for (const piece of pieces) {
+    piece.key = `${piece.x},${piece.y}`;
+    piece.track = piece === ballPiece ? play.ball : play?.players?.[piece.key];
+    piece.group.classList.add('pb-piece');
+    if (piece.track) piece.group.classList.add('pb-tracked');
+  }
+  if (play && !ballPiece) pieces.push({ kind: 'ball', track: play.ball });
   const captions = [...svg.children].filter(text => text.localName === 'text' &&
     Number(text.getAttribute('y')) >= depth - 26 && text.getAttribute('text-anchor') === 'middle' &&
     !text.getAttribute('class') && text.textContent.trim());
@@ -158,9 +146,10 @@ function prepareFrame({ svg, width, depth, paint }, copy, callbacks, route) {
     const x = Number(text.getAttribute('x')) || 0;
     const y = Number(text.getAttribute('y'));
     const pieceLabel = text.parentElement.classList.contains('pb-piece');
+    const [anchorX, anchorY] = play?.labels?.[`${x},${y}`] ?? [x, y];
     const type = document.createElementNS(SVG, 'g');
     type.setAttribute('class', pieceLabel ? 'pb-type pb-label' : 'pb-type');
-    type.style.setProperty('--pb-anchor', `translate(${x}px,${y}px)`);
+    type.style.setProperty('--pb-anchor', `translate(${anchorX}px,${anchorY}px)`);
     type.style.setProperty('--pb-unanchor', `translate(${-x}px,${-y}px)`);
     type.style.setProperty('--pb-font', `${Math.max(Number(text.getAttribute('font-size')) || 13, pieceLabel ? 13 : 17.5)}px`);
     text.before(type);
@@ -189,12 +178,12 @@ function prepareFrame({ svg, width, depth, paint }, copy, callbacks, route) {
     stage.tabIndex = 0;
     scene = createScene(canvas, { width, depth, pieces });
     scenePieces = pieces.map(piece => {
-      const fades = piece.group?.matches('.fadein,.blinkel,[opacity]');
+      const fades = !piece.track && piece.group?.matches('.fadein,.blinkel,[opacity]');
       return { ...piece, fades, move: scene.addPiece(piece.kind, fades) };
     });
   }
 
-  function draw(view, elapsed, still) {
+  function draw(view, elapsed, still, phase) {
     const w = stage.clientWidth, h = stage.clientHeight;
     if (!scene || !w || !h) return;
     if (lastWidth !== w || lastHeight !== h) {
@@ -214,15 +203,19 @@ function prepareFrame({ svg, width, depth, paint }, copy, callbacks, route) {
     const root = svg.getCTM();
     if (!root) return;
     const inverse = root.inverse();
-    for (const { group, kind, x, y, fades, move } of scenePieces) {
-      if (route && kind === 'ball' && (!ballPiece || group === ballPiece.group)) {
-        const [ballX, ballZ, lift] = passPosition(route, passTiming);
-        move(ballX, ballZ, 1, elapsed, still, lift);
+    for (const { group, kind, key, x, y, track, fades, move } of scenePieces) {
+      const player = kind !== 'ball';
+      const kick = player && play?.kicks ? kickAt(play, key, phase) : null;
+      const heading = kick?.heading ?? play?.face?.[key];
+      if (track) {
+        const [pitchX, pitchY, lift = 0] = sampleTrack(track, phase, player, player ? undefined : play.cuts);
+        if (player) group.style.setProperty('--pb-track-shift', `translate(${pitchX - x}px,${pitchY - y}px)`);
+        move(pitchX, pitchY, 1, elapsed, still, lift, heading, kick?.strike);
         continue;
       }
       const offset = inverse.multiply(group.getCTM());
       const opacity = fades ? Number(getComputedStyle(group).opacity) : 1;
-      move(offset.a * x + offset.c * y + offset.e, offset.b * x + offset.d * y + offset.f, opacity, elapsed, still);
+      move(offset.a * x + offset.c * y + offset.e, offset.b * x + offset.d * y + offset.f, opacity, elapsed, still, 0, heading, kick?.strike);
     }
     scene.draw();
     stage.dataset.pbState = 'ready';
@@ -233,7 +226,7 @@ function prepareFrame({ svg, width, depth, paint }, copy, callbacks, route) {
   resize.observe(stage);
   const unbind = bindCamera(stage, callbacks.adjust, callbacks.reset, callbacks.interactive, callbacks.touch);
   return {
-    start, draw, animated: pieces.some(({ group }) => group?.matches(MOVE)),
+    start, draw, animated: !!play || pieces.some(({ group }) => group?.matches(MOVE)),
     fail() {
       stop();
       stage.dataset.pbState = 'error';
@@ -245,7 +238,10 @@ function prepareFrame({ svg, width, depth, paint }, copy, callbacks, route) {
       resize.disconnect();
       unbind();
       labels.forEach(({ text, type }) => type.replaceWith(text));
-      pieces.forEach(({ group }) => group?.classList.remove('pb-piece'));
+      for (const { group } of pieces) {
+        group?.classList.remove('pb-piece', 'pb-tracked');
+        group?.style.removeProperty('--pb-track-shift');
+      }
       paint.forEach(element => element.classList.remove('pb-paint'));
       captions.forEach(text => text.classList.remove('pb-inline-caption'));
       caption?.remove();
@@ -310,13 +306,17 @@ export function mount(host, options = {}) {
   comparison?.classList.add('pb-compare');
   let view = initialCamera;
   if (options.camera && ['yaw', 'pitch', 'zoom'].every(key => Number.isFinite(options.camera[key]))) view = options.camera;
-  let active = true, visible = true, paused = false, orbit = false, failed = false;
+  let active = true, visible = true, paused = options.paused === true, orbit = false, failed = false;
   let staticMotion = options.reduceMotion || false;
   let request = 0, lastDraw = -Infinity;
+  let playTime = Number.isFinite(options.playTime) && options.playTime > 0 ? options.playTime : 0;
+  let lastPlayFrame = null;
 
+  const key = host.dataset.vizKey;
+  const play = pitches.length === 1 && Object.hasOwn(plays, key) ? plays[key] : null;
   const frames = pitches.map(pitch => prepareFrame(pitch, copy, {
     fail, draw: schedule, adjust, reset, interactive: () => orbit && !failed, touch: enabled => options.onInteraction?.(enabled),
-  }, PASS_ROUTES[host.dataset.vizKey]));
+  }, play));
   const animated = frames.some(frame => frame.animated);
   const toggle = () => {
     orbit = !orbit;
@@ -345,6 +345,7 @@ export function mount(host, options = {}) {
   }
   function start() {
     failed = false;
+    lastPlayFrame = null;
     try { frames.forEach(frame => frame.start()); }
     catch { fail(); return; }
     sync();
@@ -360,10 +361,17 @@ export function mount(host, options = {}) {
     request = 0;
     if (failed || !active || !visible || document.hidden) return;
     const elapsed = now - lastDraw;
-    const still = stopped() || staticMotion || motion.matches;
+    const reduced = staticMotion || motion.matches;
+    const still = stopped() || reduced;
     if (!animated || elapsed >= 1000 / 30 - 0.6 || still) {
-      try { frames.forEach(frame => frame.draw(view, Number.isFinite(elapsed) ? elapsed : 33, still)); }
+      if (play && !still) {
+        if (lastPlayFrame !== null) playTime += Math.min(now - lastPlayFrame, 100);
+        lastPlayFrame = now;
+      }
+      const phase = play ? phaseAt(play, playTime, reduced) : 0;
+      try { frames.forEach(frame => frame.draw(view, Number.isFinite(elapsed) ? elapsed : 33, still, phase)); }
       catch { fail(); return; }
+      if (play) host.dataset.pbPlayTime = String(playTime);
       lastDraw = now;
     }
     if (animated && !still) schedule();
@@ -371,6 +379,7 @@ export function mount(host, options = {}) {
 
   function sync() {
     const still = staticMotion || motion.matches;
+    if (still || stopped()) lastPlayFrame = null;
     host.toggleAttribute('data-pb-static', still);
     host.toggleAttribute('data-pb-stop', stopped());
     host.toggleAttribute('data-pb-orbit', orbit);
@@ -419,7 +428,7 @@ export function mount(host, options = {}) {
       motion.removeEventListener('change', sync);
       frames.forEach(frame => frame.destroy());
       ui.controls.remove();
-      for (const name of ['static', 'stop', 'orbit', 'view', 'camera']) host.removeAttribute(`data-pb-${name}`);
+      for (const name of ['static', 'stop', 'orbit', 'view', 'camera', 'play-time']) host.removeAttribute(`data-pb-${name}`);
       comparison?.classList.remove('pb-compare');
     },
   };

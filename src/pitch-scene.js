@@ -199,13 +199,13 @@ export function createScene(canvas, { width, depth, pieces }) {
     const football = ball ? new Mesh(ballGeometry, surface) : null;
     if (football) scene.add(football);
     let lastX, lastZ;
-    return (x, z, opacity, elapsed, still, lift = 0) => {
+    return (x, z, opacity, elapsed, still, lift = 0, heading, strike) => {
       x -= width / 2;
       z -= depth / 2;
       shade.visible = opacity > 0.12;
       shade.position.set(x + 2.5, 0.32, z + 2.4);
       if (!football) {
-        moveAthlete(x, z, opacity, elapsed, still);
+        moveAthlete(x, z, opacity, elapsed, still, heading, strike);
         return;
       }
       const dx = lastX === undefined ? 0 : x - lastX;

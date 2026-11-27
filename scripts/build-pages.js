@@ -244,7 +244,7 @@ const ogImage = (lang) => (lang === "en" ? "og-en.png" : "og-v2.png");
 // iOSアプリ（日本のApp Storeのみで配信中）への Safari スマートバナー。英語ページには出さない。
 const APP_BANNER = '<meta name="apple-itunes-app" content="app-id=6794986070">\n';
 
-const pitchLoader = '<script src="/pitch-board.js?v=2" defer></script>';
+const pitchLoader = '<script src="/pitch-board.js?v=3" defer></script>';
 const interfaceLinks = [
   '<link rel="stylesheet" href="/pitch-interface.css?v=2">',
   '<script src="/pitch-interface.js?v=2" defer></script>',

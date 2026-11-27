@@ -10,7 +10,7 @@
     if (!renderer) {
       renderer = new Promise((resolve, reject) => {
         const script = document.createElement('script');
-        script.src = '/assets/pitch-board-3d.js?v=2';
+        script.src = '/assets/pitch-board-3d.js?v=3';
         script.onload = () => resolve(window.PitchBoard);
         script.onerror = reject;
         document.head.append(script);
@@ -36,7 +36,10 @@
           anchor: host,
           inside: playback?.matches('.viz-controls') ? playback : null,
           motionHost: hero ? heroPanel : host,
-          withPause: host.id === 'vizbox' && !!host.querySelector('.mv,.mv2,.pulse,.dash,.fadein,.blinkel'),
+          withPause: (host.id === 'vizbox' || host.hasAttribute('data-pb-expanded')) &&
+            !!host.querySelector('.mv,.mv2,.pulse,.dash,.fadein,.blinkel'),
+          paused: host.dataset.pbStartPaused === 'true',
+          playTime: Number(host.dataset.pbStartTime),
           camera,
         });
         if (!record.controller) showError(host);
